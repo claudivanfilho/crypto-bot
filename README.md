@@ -1,5 +1,5 @@
-# Github Overview
-This application facilitates the vision and organization of public repositories.
+# Trader Utils
+Poloniex simplifier website
 
 ### Getting Started
 - Starts the react app with `yarn start`
