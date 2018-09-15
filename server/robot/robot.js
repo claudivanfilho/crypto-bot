@@ -1,18 +1,28 @@
-export default {
-  init: () => {
+import Strategy from './strategy'
+import OrderBook from './routines/orderBook'
 
+const user = {
+  mainCoin: 'BTC',
+  poloniex: {
+    key: process.env.ROBOT_POLONIEX_API_KEY,
+    secret: process.env.ROBOT_POLONIEX_API_SECRET,
   },
 }
 
-// var user = {
-//   displayName: 'Claudivan Filho',
-//   id: '1638998052806195',
-//   poloniex: { key: TraderUtils.POLONIEX_API_KEY, secret: TraderUtils.POLONIEX_API_SECRET },
-//   mainCoin: 'BTC',
-// }
+export default {
+  init: () => {
+    OrderBook.init()
+    initStrategy()
+  },
+}
 
-// var Strategy = require('../app/Strategy.js');
-// // var Trader = require('../app/Trader.js')
-// // var SellAnalyser = require('../app/SellAnalyser.js')
-// // var BuyAnalyser = require('../app/BuyAnalyser.js')
-// // var mode = process.argv[2]
+const initStrategy = () => {
+  if (!OrderBook.orderBook) {
+    setTimeout(() => {
+      initStrategy()
+    }, 1000)
+  } else {
+    const strategy = new Strategy(user, process.env.NODE_ENV)
+    strategy.init()
+  }
+}

@@ -12,7 +12,7 @@ router.get('/user', (req, res) => (userController.get(req, res)))
 router.put('/user', (req, res, next) => (userController.update(req, res, next)))
 // ======= ROBOT =============================================
 router.get('/robots', (req, res) => (robotController.getAll(res)))
-router.put('/robot/:coinName', (req, res) => (robotController.saveOrUpdate(req, res)))
+router.put('/robot/:pair', (req, res) => (robotController.saveOrUpdate(req, res)))
 // ======= TRADER INFO =======================================
 router.get('/tradeHistory', (req, res, next) => (traderInfoController.tradeHistory(req, res, next)))
 router.get('/coinsAvailable', (req, res, next) => (traderInfoController.coinsAvailable(req, res, next)))

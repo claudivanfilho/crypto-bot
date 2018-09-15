@@ -2,16 +2,16 @@ import Robot from '../models/robot'
 
 export default {
 
-  saveOrUpdateRobot: async (coinName, data) => {
-    var robot = await Robot.findOne({ coinName: coinName })
+  saveOrUpdateRobot: async (pair, data) => {
+    const robot = await Robot.findOne({ pair })
     if (robot) {
       return robot.update(data, () => {})
     }
-    return Robot.create({ ...data, coinName })
+    return Robot.create({ ...data, pair })
   },
 
   getAll: () => (Robot.find()),
 
-  getRobot: (coinName) => (Robot.findOne({ coinName: coinName })),
+  getRobot: (pair) => (Robot.findOne({ pair })),
 
 }

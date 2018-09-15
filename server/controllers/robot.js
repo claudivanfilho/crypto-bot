@@ -8,7 +8,7 @@ export default {
   },
 
   saveOrUpdate: async (req, res) => {
-    await RobotRepository.saveOrUpdateRobot(req.params.coinName, req.body)
+    await RobotRepository.saveOrUpdateRobot(req.params.pair, req.body)
     return res.json('Updated Succesfully')
   },
 

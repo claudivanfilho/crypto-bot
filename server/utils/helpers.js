@@ -24,6 +24,10 @@ export default {
   getSmartPriceOfBuy,
 
   getProfit,
+
+  getOrdersOfSameCoin: (pair, orders) => (
+    orders.filter(order => order.pair.toLowerCase() === pair.toLowerCase())
+  ),
 }
 
 const calculateMargin = (ask, bid) => ((ask - bid) * 100 / bid)

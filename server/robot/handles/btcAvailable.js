@@ -3,29 +3,31 @@ import TransactionService from '../../services/Transaction'
 import BuyAnalyser from '../analysers/buy'
 
 export default {
-  treatBTCAvailable,
-}
-
-async function treatBTCAvailable(openOrders, coinsAvailable, btcAvailable, robots, user) {
-  const watchFloorRobot = robots.filter(robot => robot.watchFloor && robot.watchFloor.active).pop()
-  const normalRobot = robots.filter(robot => !robot.paused && robot.canBuy).pop()
-
-  if (watchFloorRobot) {
-    await applyWatchFloor(watchFloorRobot, btcAvailable, openOrders, coinsAvailable, user)
-  } else if (normalRobot) {
-    const robot = normalRobot
-    const orderBookCoin = OrderBook[robot.pair]
-    const limit = robot.buyAnalyser.BTC_QUANTITY
-    const btcToBuy = getBtcThatCanBuy(openOrders, coinsAvailable, robot.pair, limit, btcAvailable)
-    if (btcToBuy && btcToBuy > 0.0001) {
-      await BuyAnalyser.treatBTCAvailable(robot.pair, btcToBuy, orderBookCoin, user)
+  treatBTCAvailable: async (openOrders, coinsAvailable, btcAvailable, robots, user) => {
+    for (let i = 0; i < robots.length; i++) {
+      const robot = robots[i]
+      if (isWatchFloorRobot(robot)) {
+        const didTransaction = await applyWatchFloor(robot, btcAvailable, openOrders, coinsAvailable, user)
+        if (didTransaction) return
+      } else if (isActiveRobot(robot)) {
+        const limit = robot.buyAnalyser.BTC_QUANTITY
+        const btcToBuy = getBtcThatCanBuy(openOrders, coinsAvailable, robot.pair, limit, btcAvailable)
+        if (btcToBuy && btcToBuy > 0.0001) {
+          const analyser = new BuyAnalyser(robot, user)
+          const didTransaction = await analyser.treatBTCAvailable(robot.pair, btcToBuy, robot, user)
+          if (didTransaction) return
+        }
+      }
     }
-  }
+  },
 }
+
+const isWatchFloorRobot = robot => (robot.watchFloor && robot.watchFloor.active)
+const isActiveRobot = robot => (!robot.paused && robot.canBuy)
 
 const applyWatchFloor = async (robot, btcAvailable, openOrders, coinsAvailable, user) => {
   const pair = robot.pair
-  const bidPrice = OrderBook[pair].bids[0][0]
+  const bidPrice = OrderBook.orderBook[pair].bids[0][0]
   const validBTC = getBTCToWF(btcAvailable, openOrders, pair, robot.watchFloor.btc, coinsAvailable)
   if (validBTC) {
     const wfOrders = getWFOrders(
@@ -44,9 +46,12 @@ const applyWatchFloor = async (robot, btcAvailable, openOrders, coinsAvailable, 
           wfOrders[j].price,
           user
         )
+      // eslint-disable-next-line
       } catch (err) {}
     }
+    return true
   }
+  return false
 }
 
 const getBTCToWF = (btcTotal, orders, pair, btcRobot, coinsAvailable) => {
@@ -80,8 +85,8 @@ const getWFOrders = (btc, bidMargin, bidPrice, numberOfOrders, marginOrders, amo
   return orders
 }
 
-const getBtcThatCanBuy = (openOrders, coinsAvailable, coinName, limit, btcAvailable) => {
-  var btc = getAmountInTransaction(openOrders, coinsAvailable, coinName)
+const getBtcThatCanBuy = (openOrders, coinsAvailable, pair, limit, btcAvailable) => {
+  var btc = getAmountInTransaction(openOrders, coinsAvailable, pair)
   if (limit) {
     if (btc >= limit) {
       return 0
@@ -98,7 +103,7 @@ const getAmountInTransaction = (openOrders, coinsAvailable, pair) => {
   let sum = 0
   sum += openOrders.buy.reduce((acc, val) => acc + parseFloat(val.total), 0)
   sum += openOrders.sell.reduce((acc, val) => {
-    const price = OrderBook[pair].bids[0][0]
+    const price = OrderBook.orderBook[pair].bids[0][0]
     return acc + parseFloat(val.amount * price)
   }, 0)
   sum += coinsAvailable.reduce((acc, val) => acc + parseFloat(val.btcValue), 0)

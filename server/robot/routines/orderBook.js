@@ -15,7 +15,7 @@ export default class OrderBook {
       .catch(() => this.recall())
   }
 
-  static recall = () => {
+  recall = () => {
     setTimeout(() => {
       this.init()
     }, INTERVAL_TIME_ORDER_BOOK)

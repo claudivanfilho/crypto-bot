@@ -9,6 +9,14 @@ export default {
   sell: data => sell(data),
   sellImmediate: data => sell(data, true),
   cancel: data => PoloService.cancel(data),
+  cancelOrders: async (orders, user) => {
+    for (let j = 0; j < orders.length; j++) {
+      try {
+        await PoloService.cancel({ orderNumber: orders[j].orderNumber, user })
+      // eslint-disable-next-line
+      } catch (err) {}
+    }
+  },
 }
 
 const buy = ({ pair, amount, price, user }, isImmediate) => {
