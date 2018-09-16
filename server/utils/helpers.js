@@ -25,10 +25,14 @@ export default {
 
   getProfit,
 
-  getOrdersOfSameCoin: (pair, orders) => (
-    orders.filter(order => order.pair.toLowerCase() === pair.toLowerCase())
-  ),
+  getOrdersOfSameCoin,
+
+  hasMoreThanOne,
 }
+
+const getOrdersOfSameCoin = (pair, orders) => (
+  orders.filter(order => order.pair.toLowerCase() === pair.toLowerCase())
+)
 
 const calculateMargin = (ask, bid) => ((ask - bid) * 100 / bid)
 
@@ -79,4 +83,8 @@ const filterOrdersByType = (openOrders, type) => (
   })).reduce((acc, value) => {
     return [...acc, ...value.filter(order => order.type === type)]
   }, [])
+)
+
+const hasMoreThanOne = (pair, orders) => (
+  getOrdersOfSameCoin(pair, orders).length > 1
 )

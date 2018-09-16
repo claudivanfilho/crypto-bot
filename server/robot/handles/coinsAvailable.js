@@ -2,6 +2,7 @@ import OrderBook from '../routines/orderBook'
 import SellAnalyser from '../analysers/sell'
 import Transaction from '../../services/Transaction'
 import Helpers from '../../utils/helpers'
+import RobotHelpers from '../../utils/robotHelpers'
 
 export default {
   treatCoinsAvailable: async (coinsAvailable, tradeHistory, robots, user) => {
@@ -13,17 +14,14 @@ export default {
       const amount = coin.available
       const robot = robots.filter(r => r.pair === pair).pop()
       const available = coin.available
-      if (robot && robot.watchCeil && robot.watchCeil.active) {
+      if (RobotHelpers.isWatchCeil(robot)) {
         const didTransaction = await applyWatchCeil(available, pair, robot, user)
         if (didTransaction) return
-      } else if (robot && !robot.paused) {
+      } else if (RobotHelpers.isSellActive(robot)) {
         const analyser = new SellAnalyser(robot, user)
         await analyser.threatCoinAvailable(
-          coin.coinName,
           smartPrice,
-          amount,
-          robot,
-          user
+          amount
         )
       }
     }

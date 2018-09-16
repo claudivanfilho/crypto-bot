@@ -4,27 +4,23 @@ import OrderBook from '../routines/orderBook'
 import SellAnalyser from '../analysers/sell'
 import Transaction from '../../services/Transaction'
 import Helpers from '../../utils/helpers'
+import RobotHelpers from '../../utils/robotHelpers'
 
 export default {
   treatSellOrders: async (sellOrders, tradeHistory, robots, user) => {
     for (var i = 0; i < sellOrders.length; i++) {
       const sellOrder = sellOrders[i]
       const robot = robots.filter(r => r.pair === sellOrder.pair).pop()
-      if (robot.watchCeil && robot.watchCeil.active) {
+      if (RobotHelpers.isWatchCeil(robot)) {
         const didTransaction = await applyWatchCeil(robot, sellOrders, user)
         if (didTransaction) return
-      } else if (!robot.paused) {
+      } else if (RobotHelpers.isSellActive(robot)) {
         if (Helpers.getOrdersOfSameCoin(sellOrder.pair, sellOrders).length > 1) {
           await Transaction.cancel({ orderNumber: sellOrder.orderNumber, user })
         } else {
           const smartPrice = Helpers.getSmartPriceOfBuy(tradeHistory, sellOrder.pair)
           const analyser = new SellAnalyser(robot, user)
-          await analyser.treatSell(
-            sellOrder,
-            smartPrice,
-            robot,
-            user
-          )
+          await analyser.treatSell(sellOrder, smartPrice)
         }
       }
     }

@@ -4,12 +4,12 @@ import Transaction from '../../services/Transaction'
 import Helpers from '../../utils/helpers'
 
 export default class BuyAnalyser {
-  BASE_FLOOR = 0
-  BASE_FLOOR_2 = 0
-  BASE_MIN_TO_BUY = 0
-  BASE_CEIL = 0
-  BASE_CEIL_2 = 0
-  BLOCK_CEIL = 0
+  bidAmountToActive = 0
+  bitAmountToCover = 0
+  askAmountToStop = 0
+  upperBreakpointPrice = 0
+  lowerBreakpointPrice = 0
+  coveringBid = false
   user = null
   robot = null
   pair = null
@@ -18,51 +18,38 @@ export default class BuyAnalyser {
     this.robot = robot
     this.user = user
     this.pair = robot.pair
-    this.BASE_FLOOR = robot.buyAnalyser.BASE_FLOOR
-    this.BASE_FLOOR_2 = robot.buyAnalyser.BASE_FLOOR_2
-    this.BASE_MIN_TO_BUY = robot.buyAnalyser.BASE_MIN_TO_BUY
-    this.BASE_CEIL = robot.buyAnalyser.BASE_CEIL
-    this.BASE_CEIL_2 = robot.buyAnalyser.BASE_CEIL_2
-    this.BLOCK_CEIL = robot.buyAnalyser.BLOCK_CEIL
+    this.upperBreakpointPrice = robot.buy.upperBreakpointPrice
+    this.lowerBreakpointPrice = robot.buy.lowerBreakpointPrice
+    this.bidAmountToActive = robot.buy.bidAmountToActive
+    this.bitAmountToCover = robot.buy.bidAmountToCover
+    this.askAmountToStop = robot.buy.askAmountToStop
+    this.coveringBid = robot.buy.coveringBid
   }
 
   treatBTCAvailable = async (btc) => {
     const orderBook = OrderBook.orderBook[this.pair]
-    const coin = AnalyserHelpers.getCompleteObject(orderBook)
-    const baseFloor = AnalyserHelpers.getFirstBTC(orderBook.bids, this.BASE_FLOOR)
-    const baseFloor2 = AnalyserHelpers.getFirstBTC(orderBook.bids, this.BASE_FLOOR_2)
-    const baseCeil = AnalyserHelpers.getFirstBTC(orderBook.asks, this.BASE_CEIL)
-    const baseCeil2 = AnalyserHelpers.getFirstBTC(orderBook.asks, this.BASE_CEIL_2)
+    const coinObj = AnalyserHelpers.getCompleteObject(orderBook)
+    const baseFloor = AnalyserHelpers.getFirstBTC(orderBook.bids, this.bidAmountToActive)
+    const lb = coinObj.lastBid
+    const la = coinObj.lastAsk
 
     // eslint-disable-next-line
-    if (coin.lastBid > this.robot.limitBuyPrice || coin.maxAsk >= this.BLOCK_CEIL) {
+    if (lb > this.upperBreakpointPrice || coinObj.maxAsk >= this.askAmountToStop) {
       return false
     }
 
-    if (this.robot.keepBuying) {
-      await this.buyToLast(btc, coin.lastBid, coin.lastAsk)
-      return
+    if (this.coveringBid) {
+      await this.buyToLast(btc, lb, la)
+      return true
     }
 
-    if (coin.lastBid < this.robot.minPrice) return
+    if (lb < this.lowerBreakpointPrice) return
 
-    if (baseFloor && !baseCeil && !baseCeil2) {
+    if (baseFloor) {
       const price = AnalyserHelpers.getFirstBTC(
-        orderBook.bids, this.BASE_MIN_TO_BUY
+        orderBook.bids, this.bitAmountToCover
       ).price
-      await this.buyToLast(btc, price, coin.lastAsk)
-      return true
-    } else if (baseFloor2 && !baseCeil && !baseCeil2 && coin.sumBids > coin.sumAsks) {
-      const price = AnalyserHelpers.getFirstBTC(
-        orderBook.bids, this.BASE_MIN_TO_BUY
-      ).price
-      await this.buyToLast(btc, price, coin.lastAsk)
-      return true
-    } else if (baseFloor) {
-      const price = AnalyserHelpers.getFirstBTC(
-        orderBook.bids, this.BASE_MIN_TO_BUY
-      ).price
-      await this.buyToLast(btc, price, coin.lastAsk)
+      await this.buyToLast(btc, price, la)
       return true
     }
     return false
@@ -71,47 +58,35 @@ export default class BuyAnalyser {
   treatBuyOrder = async (buyOrder) => {
     const pair = buyOrder.pair
     const orderBook = OrderBook.orderBook[pair]
-    const coin = AnalyserHelpers.getCompleteObject(orderBook)
-    const baseFloor = AnalyserHelpers.getFirstBTC(orderBook.bids, this.BASE_FLOOR)
-    const baseFloor2 = AnalyserHelpers.getFirstBTC(orderBook.bids, this.BASE_FLOOR_2)
-    const baseCeil = AnalyserHelpers.getFirstBTC(orderBook.asks, this.BASE_CEIL)
-    const baseCeil2 = AnalyserHelpers.getFirstBTC(orderBook.asks, this.BASE_CEIL_2)
+    const coinObj = AnalyserHelpers.getCompleteObject(orderBook)
+    const lb = coinObj.lastBid
+    const la = coinObj.lastAsk
+    const baseFloor = AnalyserHelpers.getFirstBTC(orderBook.bids, this.bidAmountToActive)
 
     // eslint-disable-next-line
-    if (coin.lastBid > this.robot.limitBuyPrice || coin.maxAsk >= this.BLOCK_CEIL) {
+    if (lb > this.upperBreakpointPrice || coinObj.maxAsk >= this.askAmountToStop) {
       await Transaction.cancel({ orderNumber: buyOrder.orderNumber, user: this.user })
       return false
     }
 
-    if (this.robot.keepBuying) {
-      await this.moveToLast(buyOrder, coin.lastBid, coin.lastAsk)
+    if (this.coveringBid) {
+      await this.moveToLast(buyOrder, lb, la)
       return true
     }
 
-    if (coin.lastBid < this.robot.minPrice) {
+    if (lb < this.lowerBreakpointPrice) {
       await Transaction.cancel({ orderNumber: buyOrder.orderNumber, user: this.user })
       return false
     }
 
-    if (baseFloor && !baseCeil && !baseCeil2) {
+    if (baseFloor) {
       const price = AnalyserHelpers.getFirstBTC(
-        orderBook.bids, this.BASE_MIN_TO_BUY, buyOrder.rate
+        orderBook.bids, this.bitAmountToCover, buyOrder.rate
       ).price
-      await this.moveToLast(buyOrder, price, coin.lastAsk)
-      return true
-    } else if (baseFloor2 && !baseCeil && !baseCeil2 && coin.sumBids > coin.sumAsks) {
-      const price = AnalyserHelpers.getFirstBTC(
-        orderBook.bids, this.BASE_MIN_TO_BUY, buyOrder.rate
-      ).price
-      await this.moveToLast(buyOrder, price, coin.lastAsk)
-      return true
-    } else if (baseFloor) {
-      const price = AnalyserHelpers.getFirstBTC(
-        orderBook.bids, this.BASE_MIN_TO_BUY, buyOrder.rate
-      ).price
-      await this.moveToLast(buyOrder, price, coin.lastAsk)
+      await this.moveToLast(buyOrder, price, la)
       return true
     }
+
     await Transaction.cancel({ orderNumber: buyOrder.orderNumber, user: this.user })
     return true
   }

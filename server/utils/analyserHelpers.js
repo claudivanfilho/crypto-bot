@@ -51,7 +51,6 @@ export default {
       marginMaxBid,
     }
   },
-  getProfit,
   getFirstBTC: (orders, btc, excludedPrice, limit) => {
     if (!limit) limit = orders.length
     for (let i = 0; i < orders.length; i++) {
@@ -64,14 +63,6 @@ export default {
     }
     return null
   },
-}
-
-function getProfit(smartPrice, price) {
-  if (price > smartPrice) {
-    return Helpers.calculateMargin(price, smartPrice)
-  }
-  const m = Helpers.calculateMargin(smartPrice + (smartPrice - price), smartPrice)
-  return m * -1
 }
 
 function getFunctionalData(orders, limit) {

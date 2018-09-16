@@ -4,30 +4,27 @@ import OrderBook from '../routines/orderBook'
 import BuyAnalyser from '../analysers/sell'
 import Transaction from '../../services/Transaction'
 import Helpers from '../../utils/helpers'
+import RobotHelpers from '../../utils/robotHelpers'
 
 export default {
   treatBuyOrders: async (buyOrders, robots, user) => {
     for (var i = 0; i < buyOrders.length; i++) {
       const buyOrder = buyOrders[i]
       const robot = robots.filter(r => r.pair === buyOrder.pair).pop()
-      if (robot && robot.watchFloor && robot.watchFloor.active) {
+      if (RobotHelpers.isWatchFloor(robot)) {
         const didTransaction = await applyWatchFloor(buyOrders, robot, buyOrder, user)
         if (didTransaction) return
-      } else if (robot && !robot.paused) {
-        if (hasMoreThanOne(buyOrder.pair, buyOrders)) {
+      } else if (RobotHelpers.isBuyActive(robot)) {
+        if (Helpers.hasMoreThanOne(buyOrder.pair, buyOrders)) {
           await Transaction.cancel({ orderNumber: buyOrder.orderNumber, user })
         } else {
           const analyser = new BuyAnalyser(robot, user)
-          await analyser.treatBuyOrder(buyOrder, robot, user)
+          await analyser.treatBuyOrder(buyOrder)
         }
       }
     }
   },
 }
-
-const hasMoreThanOne = (pair, orders) => (
-  Helpers.getOrdersOfSameCoin(pair, orders).length > 1
-)
 
 const applyWatchFloor = async (buyOrders, robot, buyOrder, user) => {
   const lastPriceBid = OrderBook.orderBook[robot.pair].bids[0][0]

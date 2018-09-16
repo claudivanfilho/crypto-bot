@@ -1,29 +1,27 @@
 import OrderBook from '../routines/orderBook'
 import TransactionService from '../../services/Transaction'
 import BuyAnalyser from '../analysers/buy'
+import RobotHelpers from '../../utils/robotHelpers'
 
 export default {
   treatBTCAvailable: async (openOrders, coinsAvailable, btcAvailable, robots, user) => {
     for (let i = 0; i < robots.length; i++) {
       const robot = robots[i]
-      if (isWatchFloorRobot(robot)) {
+      if (RobotHelpers.isWatchFloor(robot)) {
         const didTransaction = await applyWatchFloor(robot, btcAvailable, openOrders, coinsAvailable, user)
         if (didTransaction) return
-      } else if (isActiveRobot(robot)) {
+      } else if (RobotHelpers.isBuyActive(robot)) {
         const limit = robot.buyAnalyser.BTC_QUANTITY
         const btcToBuy = getBtcThatCanBuy(openOrders, coinsAvailable, robot.pair, limit, btcAvailable)
         if (btcToBuy && btcToBuy > 0.0001) {
           const analyser = new BuyAnalyser(robot, user)
-          const didTransaction = await analyser.treatBTCAvailable(robot.pair, btcToBuy, robot, user)
+          const didTransaction = await analyser.treatBTCAvailable(btcToBuy)
           if (didTransaction) return
         }
       }
     }
   },
 }
-
-const isWatchFloorRobot = robot => (robot.watchFloor && robot.watchFloor.active)
-const isActiveRobot = robot => (!robot.paused && robot.canBuy)
 
 const applyWatchFloor = async (robot, btcAvailable, openOrders, coinsAvailable, user) => {
   const pair = robot.pair

@@ -43,7 +43,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../build', 'index.html'))
 })
 
-robot.init()
+// robot.init()
 
 app.listen(port)
 console.log(`Server started in the port ${port}`)
