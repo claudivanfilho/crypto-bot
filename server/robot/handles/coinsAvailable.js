@@ -19,7 +19,7 @@ export default {
         if (didTransaction) return
       } else if (RobotHelpers.isSellActive(robot)) {
         const analyser = new SellAnalyser(robot, user)
-        await analyser.threatCoinAvailable(
+        await analyser.treatCoinAvailable(
           smartPrice,
           amount
         )

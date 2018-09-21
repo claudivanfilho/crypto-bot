@@ -34,8 +34,6 @@ const getOrdersOfSameCoin = (pair, orders) => (
   orders.filter(order => order.pair.toLowerCase() === pair.toLowerCase())
 )
 
-const calculateMargin = (ask, bid) => ((ask - bid) * 100 / bid)
-
 const getSmartPriceOfBuy = (tradeHistory, pair) => {
   var orders = getBuyOrdersInSequence(tradeHistory, pair)
   var amountCoin = 0
@@ -74,6 +72,8 @@ const getProfit = (smartPrice, price) => {
   var m = calculateMargin(smartPrice + (smartPrice - price), smartPrice)
   return m * -1
 }
+
+const calculateMargin = (ask, bid) => ((ask - bid) * 100 / bid)
 
 const fixValue = (value) => (parseFloat(value.toFixed(8)) + 0)
 

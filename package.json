@@ -38,6 +38,7 @@
     "start": "BROWSER=none react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
+    "test-server": "jest server",
     "eject": "react-scripts eject",
     "babel-node": "babel-node --presets=es2015,stage-2",
     "server": "nodemon --exec npm run babel-node -- server/server.js",

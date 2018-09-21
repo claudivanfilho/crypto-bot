@@ -20,7 +20,7 @@ export default {
         } else {
           const smartPrice = Helpers.getSmartPriceOfBuy(tradeHistory, sellOrder.pair)
           const analyser = new SellAnalyser(robot, user)
-          await analyser.treatSell(sellOrder, smartPrice)
+          await analyser.treatSellOrder(sellOrder, smartPrice)
         }
       }
     }

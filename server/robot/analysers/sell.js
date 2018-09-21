@@ -1,5 +1,6 @@
 import OrderBook from '../routines/orderBook'
 import AnalyserHelpers from '../../utils/analyserHelpers'
+import Helpers from '../../utils/helpers'
 import Transaction from '../../services/Transaction'
 
 export default class SellAnalyser {
@@ -29,15 +30,15 @@ export default class SellAnalyser {
     this.lowerBreakpointPrice = robot.sell.lowerBreakpointPrice
   }
 
-  treatSell = async (sellOrder, smartPrice) => {
+  treatSellOrder = async (sellOrder, smartPrice) => {
     const user = this.user
     const orderBook = OrderBook.orderBook[sellOrder.pair]
     const coinObj = AnalyserHelpers.getCompleteObject(orderBook)
     const lb = parseFloat(coinObj.lastBid)
     const la = parseFloat(coinObj.lastAsk)
-    const profitToAsk = AnalyserHelpers.getProfit(smartPrice, la)
-    const profitToBid = AnalyserHelpers.getProfit(smartPrice, lb)
-    const profitFixedToAsk = AnalyserHelpers.getProfit(this.fixedPrice, la)
+    const profitToAsk = Helpers.getProfit(smartPrice, la)
+    const profitToBid = Helpers.getProfit(smartPrice, lb)
+    const profitFixedToAsk = Helpers.getProfit(la, this.fixedPrice)
     const sellOrderRate = parseFloat(sellOrder.rate)
 
     if (this.coveringAsk) {
@@ -59,13 +60,13 @@ export default class SellAnalyser {
     } else if (profitToBid >= this.minProfit && coinObj.sumBids < coinObj.sumAsks) {
       await this.moveImmediate(sellOrder, lb)
     } else if (this.fixedPrice) {
-      if (profitFixedToAsk > (-1 * this.marginFixedPrice)) {
+      if (profitFixedToAsk > 0 && profitFixedToAsk < this.marginFixedPrice) {
         await Transaction.cancel({ orderNumber: sellOrder.orderNumber, user })
       } else if (sellOrderRate !== this.fixedPrice) {
-        const sellP = this.getSellPrice(orderBook.asks)
+        const sellPrice = this.getSellPrice(orderBook.asks)
         const lastAskPrice = orderBook.asks.pop()[0]
-        if (sellP && sellOrderRate !== sellP) {
-          await this.moveToLast(sellOrder, lb, sellP)
+        if (sellPrice && sellOrderRate !== sellPrice) {
+          await this.moveToLast(sellOrder, lb, sellPrice)
         } else if (lastAskPrice < this.fixedPrice) {
           await this.moveToLast(sellOrder, lb, this.fixedPrice)
         }
@@ -75,17 +76,17 @@ export default class SellAnalyser {
     }
   }
 
-  threatCoinAvailable = async (smartPrice, amount) => {
+  treatCoinAvailable = async (smartPrice, amount) => {
     const user = this.user
     const orderBook = OrderBook.orderBook[this.pair]
     const coinObj = AnalyserHelpers.getCompleteObject(orderBook)
     const lb = parseFloat(coinObj.lastBid)
     const la = parseFloat(coinObj.lastAsk)
-    const profitToAsk = AnalyserHelpers.getProfit(smartPrice, la)
-    const profitToBid = AnalyserHelpers.getProfit(smartPrice, lb)
-    const profitFixedToAsk = AnalyserHelpers.getProfit(this.fixedSellPrice, la)
+    const profitToAsk = Helpers.getProfit(smartPrice, la)
+    const profitToBid = Helpers.getProfit(smartPrice, lb)
+    const profitFixedToAsk = Helpers.getProfit(this.fixedSellPrice, la)
 
-    if (this.keepSelling) {
+    if (this.coveringAsk) {
       await this.sellToLast(this.pair, amount, lb, la)
       return
     }
@@ -148,7 +149,8 @@ export default class SellAnalyser {
   moveToLast = async (sellOrder, lb, la) => {
     const user = this.user
     const laMinusOne = la - 0.00000001
-    if (sellOrder.rate !== la && sellOrder.rate !== laMinusOne) {
+    const sr = parseFloat(sellOrder.rate)
+    if (sr !== la && sr !== laMinusOne) {
       if (laMinusOne === lb) {
         await this.moveImmediate(sellOrder, lb)
       } else {
