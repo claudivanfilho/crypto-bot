@@ -1,12 +1,12 @@
 export default {
-  isWatchFloor,
+  isNestedBuy,
   isBuyActive,
-  isWatchCeil,
+  isNestedSell,
   isSellActive,
 }
 
-const isWatchFloor = robot => (robot.watchFloor && robot.watchFloor.active)
+const isNestedBuy = robot => (robot.nestedBuy && robot.nestedBuy.active)
 const isBuyActive = robot => (!robot.paused && robot.buy.active)
 
-const isWatchCeil = robot => (robot.watchCeil && robot.watchCeil.active)
+const isNestedSell = robot => (robot.nestedSell && robot.nestedSell.active)
 const isSellActive = robot => (!robot.paused && robot.sell.active)

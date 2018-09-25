@@ -27,7 +27,7 @@ const robotSchema = new Schema({
     askAmountToCover: Number,
     immediate: { type: Boolean, default: false },
   },
-  watchFloor: {
+  nestedBuy: {
     active: Boolean,
     btc: Number,
     bidMargin: Number,
@@ -35,7 +35,7 @@ const robotSchema = new Schema({
     marginOrders: Number,
     amounts: [Number],
   },
-  watchCeil: {
+  nestedSell: {
     active: Boolean,
     bidMargin: Number,
     numberOfOrders: Number,

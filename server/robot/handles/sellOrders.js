@@ -3,7 +3,11 @@ import _ from 'lodash'
 import OrderBook from '../routines/orderBook'
 import SellAnalyser from '../analysers/sell'
 import Transaction from '../../services/Transaction'
-import Helpers from '../../utils/helpers'
+import {
+  getOrdersWithSamePair,
+  calculateMargin,
+  getSmartPriceOfBuy,
+} from '../../utils/helpers'
 import RobotHelpers from '../../utils/robotHelpers'
 
 export default {
@@ -11,14 +15,14 @@ export default {
     for (var i = 0; i < sellOrders.length; i++) {
       const sellOrder = sellOrders[i]
       const robot = robots.filter(r => r.pair === sellOrder.pair).pop()
-      if (RobotHelpers.isWatchCeil(robot)) {
-        const didTransaction = await applyWatchCeil(robot, sellOrders, user)
+      if (RobotHelpers.isNestedSell(robot)) {
+        const didTransaction = await applyNestedSell(robot, sellOrders, user)
         if (didTransaction) return
       } else if (RobotHelpers.isSellActive(robot)) {
-        if (Helpers.getOrdersOfSameCoin(sellOrder.pair, sellOrders).length > 1) {
+        if (getOrdersWithSamePair(sellOrder.pair, sellOrders).length > 1) {
           await Transaction.cancel({ orderNumber: sellOrder.orderNumber, user })
         } else {
-          const smartPrice = Helpers.getSmartPriceOfBuy(tradeHistory, sellOrder.pair)
+          const smartPrice = getSmartPriceOfBuy(tradeHistory, sellOrder.pair)
           const analyser = new SellAnalyser(robot, user)
           await analyser.treatSellOrder(sellOrder, smartPrice)
         }
@@ -27,20 +31,20 @@ export default {
   },
 }
 
-const applyWatchCeil = async (robot, sellOrders, user) => {
+const applyNestedSell = async (robot, sellOrders, user) => {
   const lastPriceBid = OrderBook.orderBook[robot.pair].bids[0][0]
-  let coinOrders = Helpers.getOrdersOfSameCoin(robot.pair, sellOrders)
-  if (coinOrders.length !== robot.watchCeil.numberOfOrders) {
+  let coinOrders = getOrdersWithSamePair(robot.pair, sellOrders)
+  if (coinOrders.length !== robot.nestedSell.numberOfOrders) {
     await Transaction.cancelOrders(coinOrders, user)
     return true
   }
   coinOrders = _.orderBy(coinOrders, ['rate'], ['asc'])
   const firstOrder = coinOrders[0]
-  const margin = Helpers.calculateMargin(firstOrder.rate, lastPriceBid)
-  if (margin < robot.watchCeil.bidMargin - 0.5) {
+  const margin = calculateMargin(firstOrder.rate, lastPriceBid)
+  if (margin < robot.nestedSell.bidMargin - 0.5) {
     await Transaction.cancelOrders(coinOrders, user)
     return true
-  } else if (margin > robot.watchCeil.bidMargin + 0.5) {
+  } else if (margin > robot.nestedSell.bidMargin + 0.5) {
     await Transaction.cancelOrders(coinOrders, user)
     return true
   }

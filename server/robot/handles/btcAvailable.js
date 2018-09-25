@@ -7,8 +7,8 @@ export default {
   treatBTCAvailable: async (openOrders, coinsAvailable, btcAvailable, robots, user) => {
     for (let i = 0; i < robots.length; i++) {
       const robot = robots[i]
-      if (RobotHelpers.isWatchFloor(robot)) {
-        const didTransaction = await applyWatchFloor(robot, btcAvailable, openOrders, coinsAvailable, user)
+      if (RobotHelpers.isNestedBuy(robot)) {
+        const didTransaction = await applyNestedBuy(robot, btcAvailable, openOrders, coinsAvailable, user)
         if (didTransaction) return
       } else if (RobotHelpers.isBuyActive(robot)) {
         const limit = robot.buyAnalyser.BTC_QUANTITY
@@ -23,25 +23,25 @@ export default {
   },
 }
 
-const applyWatchFloor = async (robot, btcAvailable, openOrders, coinsAvailable, user) => {
+const applyNestedBuy = async (robot, btcAvailable, openOrders, coinsAvailable, user) => {
   const pair = robot.pair
   const bidPrice = OrderBook.orderBook[pair].bids[0][0]
-  const validBTC = getBTCToWF(btcAvailable, openOrders, pair, robot.watchFloor.btc, coinsAvailable)
+  const validBTC = getBTCToWF(btcAvailable, openOrders, pair, robot.nestedBuy.btc, coinsAvailable)
   if (validBTC) {
-    const wfOrders = getWFOrders(
-      robot.watchFloor.btc <= validBTC ? robot.watchFloor.btc : btcAvailable,
-      robot.watchFloor.bidMargin,
+    const nestedBuyOrders = getNestedBuyOrders(
+      robot.nestedBuy.btc <= validBTC ? robot.nestedBuy.btc : btcAvailable,
+      robot.nestedBuy.bidMargin,
       bidPrice,
-      robot.watchFloor.numberOfOrders,
-      robot.watchFloor.marginOrders,
-      robot.watchFloor.amounts
+      robot.nestedBuy.numberOfOrders,
+      robot.nestedBuy.marginOrders,
+      robot.nestedBuy.amounts
     )
-    for (let j = 0; j < wfOrders.length; j++) {
+    for (let j = 0; j < nestedBuyOrders.length; j++) {
       try {
         await TransactionService.buy(
           pair,
-          wfOrders[j].amount,
-          wfOrders[j].price,
+          nestedBuyOrders[j].amount,
+          nestedBuyOrders[j].price,
           user
         )
       // eslint-disable-next-line
@@ -63,7 +63,7 @@ const getBTCToWF = (btcTotal, orders, pair, btcRobot, coinsAvailable) => {
   return 0
 }
 
-const getWFOrders = (btc, bidMargin, bidPrice, numberOfOrders, marginOrders, amounts) => {
+const getNestedBuyOrders = (btc, bidMargin, bidPrice, numberOfOrders, marginOrders, amounts) => {
   const orders = []
   const priceMinusMargin = bidPrice - (bidPrice * (bidMargin / 100))
   let acumulatedAmount = 0

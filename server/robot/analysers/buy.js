@@ -1,11 +1,11 @@
 import OrderBook from '../routines/orderBook'
-import AnalyserHelpers from '../../utils/analyserHelpers'
+import OrderBookHelpers from '../../utils/orderBookHelpers'
 import Transaction from '../../services/Transaction'
-import Helpers from '../../utils/helpers'
+import { getAmountCoin } from '../../utils/helpers'
 
 export default class BuyAnalyser {
   bidAmountToActive = 0
-  bitAmountToCover = 0
+  bidAmountToCover = 0
   askAmountToStop = 0
   upperBreakpointPrice = 0
   lowerBreakpointPrice = 0
@@ -21,15 +21,17 @@ export default class BuyAnalyser {
     this.upperBreakpointPrice = robot.buy.upperBreakpointPrice
     this.lowerBreakpointPrice = robot.buy.lowerBreakpointPrice
     this.bidAmountToActive = robot.buy.bidAmountToActive
-    this.bitAmountToCover = robot.buy.bidAmountToCover
+    this.bidAmountToCover = robot.buy.bidAmountToCover
     this.askAmountToStop = robot.buy.askAmountToStop
     this.coveringBid = robot.buy.coveringBid
   }
 
   treatBTCAvailable = async (btc) => {
     const orderBook = OrderBook.orderBook[this.pair]
-    const coinObj = AnalyserHelpers.getCompleteObject(orderBook)
-    const baseFloor = AnalyserHelpers.getFirstBTC(orderBook.bids, this.bidAmountToActive)
+    const coinObj = OrderBookHelpers.getUsefulData(orderBook)
+    const baseFloor = OrderBookHelpers.findBiggerThan(
+      orderBook.bids, this.bidAmountToActive
+    )
     const lb = coinObj.lastBid
     const la = coinObj.lastAsk
 
@@ -46,8 +48,8 @@ export default class BuyAnalyser {
     if (lb < this.lowerBreakpointPrice) return
 
     if (baseFloor) {
-      const price = AnalyserHelpers.getFirstBTC(
-        orderBook.bids, this.bitAmountToCover
+      const price = OrderBookHelpers.findBiggerThan(
+        orderBook.bids, this.bidAmountToCover
       ).price
       await this.buyToLast(btc, price, la)
       return true
@@ -58,10 +60,10 @@ export default class BuyAnalyser {
   treatBuyOrder = async (buyOrder) => {
     const pair = buyOrder.pair
     const orderBook = OrderBook.orderBook[pair]
-    const coinObj = AnalyserHelpers.getCompleteObject(orderBook)
+    const coinObj = OrderBookHelpers.getUsefulData(orderBook)
     const lb = coinObj.lastBid
     const la = coinObj.lastAsk
-    const baseFloor = AnalyserHelpers.getFirstBTC(orderBook.bids, this.bidAmountToActive)
+    const baseFloor = OrderBookHelpers.findBiggerThan(orderBook.bids, this.bidAmountToActive)
 
     // eslint-disable-next-line
     if (lb > this.upperBreakpointPrice || coinObj.maxAsk >= this.askAmountToStop) {
@@ -80,8 +82,8 @@ export default class BuyAnalyser {
     }
 
     if (baseFloor) {
-      const price = AnalyserHelpers.getFirstBTC(
-        orderBook.bids, this.bitAmountToCover, buyOrder.rate
+      const price = OrderBookHelpers.findBiggerThan(
+        orderBook.bids, this.bidAmountToCover, buyOrder.rate
       ).price
       await this.moveToLast(buyOrder, price, la)
       return true
@@ -113,7 +115,7 @@ export default class BuyAnalyser {
     if (op !== lb && (lb + 0.00000001) !== op) {
       const lbPlusOne = lb + 0.00000001
       if (lbPlusOne === la) {
-        const amount = Helpers.getAmountCoin(buyOrder.total, la)
+        const amount = getAmountCoin(buyOrder.total, la)
         await Transaction.moveImmediate({
           orderNumber: buyOrder.orderNumber,
           amount,
@@ -121,7 +123,7 @@ export default class BuyAnalyser {
           user: this.user,
         })
       } else {
-        const amount = Helpers.getAmountCoin(buyOrder.total, lbPlusOne)
+        const amount = getAmountCoin(buyOrder.total, lbPlusOne)
         await Transaction.move({
           orderNumber: buyOrder.orderNumber,
           amount,

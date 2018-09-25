@@ -1,14 +1,16 @@
 import PoloService from './Polo'
-import Helpers from '../utils/helpers'
+import { getAmountCoin } from '../utils/generalHelpers'
 
 export default {
-  buy: data => buy(data),
-  buyImmediate: data => buy(data, true),
-  move: data => move(data),
-  moveImmediate: data => move(data, true),
-  sell: data => sell(data),
-  sellImmediate: data => sell(data, true),
-  cancel: data => PoloService.cancel(data),
+  buy: ({ pair, amount, price, user }) => buy({ pair, amount, price, user }),
+  buyImmediate: ({ pair, amount, price, user }) => buy({ pair, amount, price, user }, true),
+  move: ({ orderNumber, amount, price, user }) => move({ orderNumber, amount, price, user }),
+  moveImmediate: ({ orderNumber, amount, price, user }) => move({ orderNumber, amount, price, user }, true),
+  sell: ({ pair, amount, price, user }) => sell({ pair, amount, price, user }),
+  sellImmediate: ({ pair, amount, price, user }) => sell({ pair, amount, price, user }, true),
+  cancel: ({ orderNumber, amount, price, user }) => PoloService.cancel(
+    { orderNumber, amount, price, user }
+  ),
   cancelOrders: async (orders, user) => {
     for (let j = 0; j < orders.length; j++) {
       try {
@@ -20,7 +22,7 @@ export default {
 }
 
 const buy = ({ pair, amount, price, user }, isImmediate) => {
-  const amountCoin = Helpers.getAmountCoin(amount, price)
+  const amountCoin = getAmountCoin(amount, price)
   return PoloService[isImmediate ? 'buyImmediate' : 'buy']({
     pair, price, amount: amountCoin, user,
   })

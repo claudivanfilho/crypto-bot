@@ -14,7 +14,7 @@ export default {
   },
   openOrders: (req, res, next) => {
     PoloService.fetchOpenOrders(req.user).then(openOrders => {
-      res.json(Helpers.filterBuyAndSellOrders(openOrders))
+      res.json(Helpers.normalizeOpenOrders(openOrders))
     }).catch(error => next(error))
   },
 }

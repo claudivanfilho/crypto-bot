@@ -1,6 +1,6 @@
 import OrderBook from '../routines/orderBook'
-import AnalyserHelpers from '../../utils/analyserHelpers'
-import Helpers from '../../utils/helpers'
+import OrderBookHelpers from '../../utils/orderBookHelpers'
+import { getProfit } from '../../utils/helpers'
 import Transaction from '../../services/Transaction'
 
 export default class SellAnalyser {
@@ -33,12 +33,12 @@ export default class SellAnalyser {
   treatSellOrder = async (sellOrder, smartPrice) => {
     const user = this.user
     const orderBook = OrderBook.orderBook[sellOrder.pair]
-    const coinObj = AnalyserHelpers.getCompleteObject(orderBook)
+    const coinObj = OrderBookHelpers.getUsefulData(orderBook)
     const lb = parseFloat(coinObj.lastBid)
     const la = parseFloat(coinObj.lastAsk)
-    const profitToAsk = Helpers.getProfit(smartPrice, la)
-    const profitToBid = Helpers.getProfit(smartPrice, lb)
-    const profitFixedToAsk = Helpers.getProfit(la, this.fixedPrice)
+    const profitToAsk = getProfit(smartPrice, la)
+    const profitToBid = getProfit(smartPrice, lb)
+    const profitFixedToAsk = getProfit(la, this.fixedPrice)
     const sellOrderRate = parseFloat(sellOrder.rate)
 
     if (this.coveringAsk) {
@@ -79,12 +79,12 @@ export default class SellAnalyser {
   treatCoinAvailable = async (smartPrice, amount) => {
     const user = this.user
     const orderBook = OrderBook.orderBook[this.pair]
-    const coinObj = AnalyserHelpers.getCompleteObject(orderBook)
+    const coinObj = OrderBookHelpers.getUsefulData(orderBook)
     const lb = parseFloat(coinObj.lastBid)
     const la = parseFloat(coinObj.lastAsk)
-    const profitToAsk = Helpers.getProfit(smartPrice, la)
-    const profitToBid = Helpers.getProfit(smartPrice, lb)
-    const profitFixedToAsk = Helpers.getProfit(this.fixedSellPrice, la)
+    const profitToAsk = getProfit(smartPrice, la)
+    const profitToBid = getProfit(smartPrice, lb)
+    const profitFixedToAsk = getProfit(this.fixedSellPrice, la)
 
     if (this.coveringAsk) {
       await this.sellToLast(this.pair, amount, lb, la)

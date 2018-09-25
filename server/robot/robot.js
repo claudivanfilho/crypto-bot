@@ -1,8 +1,9 @@
 import Strategy from './strategy'
 import OrderBook from './routines/orderBook'
 
+const INTERVAL_STRATEGY = 500 // milliseconds
+
 const user = {
-  mainCoin: 'BTC',
   poloniex: {
     key: process.env.ROBOT_POLONIEX_API_KEY,
     secret: process.env.ROBOT_POLONIEX_API_SECRET,
@@ -23,6 +24,6 @@ const initStrategy = () => {
     }, 1000)
   } else {
     const strategy = new Strategy(user, process.env.NODE_ENV)
-    strategy.init()
+    strategy.init(INTERVAL_STRATEGY)
   }
 }
