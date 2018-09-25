@@ -7,7 +7,7 @@ import session from 'express-session'
 import routes from './routes'
 import authFace from './auth/face'
 import database from './database'
-import robot from './robot/robot'
+import robot from './robot/index'
 
 dotenv.config()
 

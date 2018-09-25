@@ -93,12 +93,12 @@ export default class Strategy {
       argsToCondition,
       robots.filter(robot => Helpers.isBuyActive(robot)),
       [
-        [CO.isNestedBuyActive, CO.hasBtcAvailableToBuyOfRobot], AC.doNestedBuyOrders,
+        [CO.isNestedBuyActive, CO.hasBtcAvailableToBuyOfRobot], AC.doNestedBuyOrders, true,
         [CO.hasBtcAvailableToBuyOfRobot, CO.lastBidBiggerThanUpperBreakpointInBuy], () => {},
         [CO.hasBtcAvailableToBuyOfRobot, CO.hasAskAmountToStop], () => {},
         [CO.hasBtcAvailableToBuyOfRobot, CO.lastBidSmallerThanLowerBreakpointInBuy], () => {},
-        [CO.hasBtcAvailableToBuyOfRobot, CO.isCoveringBidActive], AC.buyToLast,
-        [CO.hasBtcAvailableToBuyOfRobot, CO.hasBidAmountToActive], AC.buyToCoverBidAmount,
+        [CO.hasBtcAvailableToBuyOfRobot, CO.isCoveringBidActive], AC.buyToLast, true,
+        [CO.hasBtcAvailableToBuyOfRobot, CO.hasBidAmountToActive], AC.buyToCoverBidAmount, true,
       ]
     )
   }
