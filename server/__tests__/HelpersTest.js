@@ -6,7 +6,10 @@ import {
   getOrdersWithSamePair,
   getProfit,
   hasMoreThanOne,
-} from '../utils/helpers'
+  getAmountCoin,
+  getBTCAvailable,
+  findRobot,
+} from '../utils/generalHelpers'
 import { FOUR_COINS } from '../__mocks__/coinsAvailableMock'
 import {
   ONE_BUY_ONE_SELL,
@@ -54,4 +57,9 @@ describe('Test Helpers', () => {
       hasMoreThanOne('BTC_NXT', normalizeOpenOrders(ONE_BUY_ONE_SELL).sell)
     ).toBe(false)
   })
+
+  // test getAmountCoin
+  // hasMoreThanOne
+  // getBTCAvailable
+  // findRobot
 })

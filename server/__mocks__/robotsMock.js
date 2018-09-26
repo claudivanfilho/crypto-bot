@@ -1,0 +1,43 @@
+export const ARRAY_WITH_ONE_ROBOT = [
+  {
+    id: '1',
+    pair: 'BTC_NXT',
+    paused: false,
+    buy: {
+      active: true,
+      coveringBid: false,
+      upperBreakpointPrice: 0,
+      lowerBreakpointPrice: 0,
+      btcValue: 0,
+      bidAmountToActive: 0,
+      bidAmountToCover: 0,
+      askAmountToStop: 0,
+    },
+    sell: {
+      active: false,
+      minProfit: 3,
+      coveringAsk: false,
+      lowerBreakpointPrice: 0,
+      marginLimit: 0,
+      fixedPrice: 0,
+      marginFixedPrice: 3,
+      askAmountToCover: 0,
+      immediate: false,
+    },
+    nestedBuy: {
+      active: false,
+      btc: 0,
+      bidMargin: 0,
+      numberOfOrders: 0,
+      marginOrders: 0,
+      amounts: [],
+    },
+    nestedSell: {
+      active: false,
+      bidMargin: 0,
+      numberOfOrders: 0,
+      marginOrders: 0,
+      amounts: [],
+    },
+  },
+]

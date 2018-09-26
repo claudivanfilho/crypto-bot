@@ -15,7 +15,6 @@ export default {
   sellToCoverAskAmount,
   moveToCoverAskAmount,
   doNestedSellOrders,
-  teste: () => {},
 }
 
 export const cancelSellOrdersWithSamePair = ({

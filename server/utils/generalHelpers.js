@@ -107,8 +107,8 @@ export const fixValue = (value) => (parseFloat(value.toFixed(8)) + 0)
 export const findRobot = (robots, item) => (
   robots.filter(robot =>
     (robot.pair.toLowerCase() === item.pair.toLowerCase()) ||
-    (robot.pair.toLowerCase().match(new RegExp(`_${item.coinName}$|${item.coinName}_`))).pop()
-  )
+    (robot.pair.toLowerCase().match(new RegExp(`_${item.coinName}$|${item.coinName}_`)))
+  ).pop()
 )
 
 export const getBtcAvailableToBuyOfRobot = (

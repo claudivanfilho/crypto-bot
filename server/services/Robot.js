@@ -5,12 +5,19 @@ export default {
       for (let j = 0; j < conditionsAction.length; j++) {
         const conditions = conditionsAction[0]
         const action = conditionsAction[1]
-        const breakIfCatched = conditionsAction[2]
+        let breakIfCatched = conditionsAction[2]
         let canDoAction = true
         for (let k = 0; k < conditions.length; k++) {
-          const conditionResult = await conditions[k]({ args, item })
-          if (!conditionResult) {
+          try {
+            const conditionResult = await conditions[k]({ args, item })
+            if (!conditionResult) {
+              canDoAction = false
+              break
+            }
+          } catch (err) {
+            console.log(`Something wrong happen in condition ${conditions[k].name}:`, err.message)
             canDoAction = false
+            breakIfCatched = true
             break
           }
         }
@@ -18,7 +25,7 @@ export default {
           try {
             await action({ args, item })
           } catch (err) {
-            console.log('something wrong happen on doActiontoEach: ', err.message)
+            console.log(`Something wrong happen in action ${action.name}:`, err.message)
           }
           if (breakIfCatched) {
             return

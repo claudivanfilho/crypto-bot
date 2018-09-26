@@ -6,7 +6,7 @@ export default {
   isValidAmount,
 }
 
-const isValidAmount = ({
+export const isValidAmount = ({
   args: { robots, orderBookAll }, item,
 }) => {
   const robot = findRobot(robots, item)
