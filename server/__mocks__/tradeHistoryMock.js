@@ -46,3 +46,18 @@ export const BUY_BETWEEN_SELLS = {
       'category': 'exchange',
     }],
 }
+
+export const TRADE_HISTORY_NXT = {
+  'BTC_NXT': [{
+    'globalTradeID': 240477244,
+    'tradeID': '1040940',
+    'date': '2017-10-08 21:03:13',
+    'rate': '0.00001000',
+    'amount': '5.72760507',
+    'total': '0.03020744',
+    'fee': '0.00150000',
+    'orderNumber': '27140016874',
+    'type': 'buy',
+    'category': 'exchange',
+  }],
+}

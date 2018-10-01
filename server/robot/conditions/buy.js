@@ -1,6 +1,6 @@
 /**
  * The arguments that are passed to each condition are:
- * { args: { openOrders, coinsAvailable, btcAvailable, robots, tradeHistory }, item }
+ * { args: { openOrders, coinsAvailable, AmountAvailable, robots, tradeHistory }, item }
  * item arg is the element in the collection arg of the doActionToEach function in the services/robot
  */
 
@@ -9,7 +9,7 @@ import {
   getOrdersWithSamePair,
   calculateMargin,
   findRobot,
-  getBtcAvailableToBuyOfRobot,
+  getAmountAvailableToBuyOfRobot,
 } from '../../utils/generalHelpers'
 import {
   getUsefulData,
@@ -23,23 +23,24 @@ export default {
   isBuyActive,
   hasMoreThanOneBuyOrderWithSamePair,
   isCoveringBidActive,
-  isBuyImmediate,
   lastBidBiggerThanUpperBreakpointInBuy,
   lastBidSmallerThanLowerBreakpointInBuy,
   hasAskAmountToStop,
   hasBidAmountToActive,
-  hasBtcAvailableToBuyOfRobot,
+  hasAmountAvailableToBuyOfRobot,
 }
 
 export const nestedBuyNumOfOrdersNotMatch = ({
   args: { robots, openOrders: { buy: buyOrders } }, item,
 }) => {
   const robot = findRobot(robots, item)
+  if (!robot) return false
   const coinOrders = getOrdersWithSamePair(item.pair, buyOrders)
   return coinOrders.length !== robot.nestedBuy.numberOfOrders
 }
 export const isNestedBuyActive = ({ args: { robots }, item }) => {
   const robot = findRobot(robots, item)
+  if (!robot) return false
   return robot.nestedBuy && robot.nestedBuy.active
 }
 
@@ -47,6 +48,7 @@ export const nestedBuyBidMarginExceedsLimits = ({
   args: { robots, orderBookAll, openOrders: { buy: buyOrders } }, item,
 }) => {
   const robot = findRobot(robots, item)
+  if (!robot) return false
   const lastPriceBid = orderBookAll[robot.pair].bids[0][0]
   let coinOrders = getOrdersWithSamePair(item.pair, buyOrders)
   coinOrders = _.orderBy(coinOrders, ['rate'], ['asc'])
@@ -58,6 +60,7 @@ export const nestedBuyBidMarginExceedsLimits = ({
 
 export const isBuyActive = ({ args: { robots }, item }) => {
   const robot = findRobot(robots, item)
+  if (!robot) return false
   return !robot.paused && robot.buy.active
 }
 
@@ -69,26 +72,15 @@ export const hasMoreThanOneBuyOrderWithSamePair = ({
 
 export const isCoveringBidActive = ({ args: { robots }, item }) => {
   const robot = findRobot(robots, item)
+  if (!robot) return false
   return robot.buy.coveringBid
-}
-
-export const lastBidSmallerThanBuyBreakpointInBuy = (
-  { args: { robots, orderBookAll }, item }
-) => {
-  const robot = findRobot(robots, item)
-  const lastPriceBid = orderBookAll[robot.pair].bids[0][0]
-  return lastPriceBid < robot.buy.lowerBreakpointPrice
-}
-
-export const isBuyImmediate = ({ args: { robots }, item }) => {
-  const robot = findRobot(robots, item)
-  return robot.buy.immediate
 }
 
 export const lastBidBiggerThanUpperBreakpointInBuy = ({
   args: { robots, orderBookAll }, item,
 }) => {
   const robot = findRobot(robots, item)
+  if (!robot) return false
   const lastPriceBid = orderBookAll[robot.pair].bids[0][0]
   return lastPriceBid >= robot.buy.upperBreakpointPrice
 }
@@ -97,6 +89,7 @@ export const lastBidSmallerThanLowerBreakpointInBuy = ({
   args: { robots, orderBookAll }, item,
 }) => {
   const robot = findRobot(robots, item)
+  if (!robot) return false
   const lastPriceBid = orderBookAll[robot.pair].bids[0][0]
   return lastPriceBid < robot.buy.lowerBreakpointPrice
 }
@@ -105,6 +98,7 @@ export const hasAskAmountToStop = ({
   args: { robots, orderBookAll }, item,
 }) => {
   const robot = findRobot(robots, item)
+  if (!robot) return false
   const usefulData = getUsefulData(orderBookAll[robot.pair])
   return usefulData.maxAsk >= robot.buy.askAmountToStop
 }
@@ -113,15 +107,18 @@ export const hasBidAmountToActive = ({
   args: { robots, orderBookAll }, item,
 }) => {
   const robot = findRobot(robots, item)
-  return findBiggerThan(
+  if (!robot) return false
+  return !!findBiggerThan(
     orderBookAll[robot.pair].bids, robot.buy.bidAmountToActive
   )
 }
 
-export const hasBtcAvailableToBuyOfRobot = ({
-  args: { orderBookAll, openOrders, btcAvailable, coinsAvailable }, item,
+export const hasAmountAvailableToBuyOfRobot = ({
+  args: { robots, orderBookAll, openOrders, amountAvailable, coinsAvailable }, item,
 }) => {
-  return !!getBtcAvailableToBuyOfRobot(
-    openOrders, coinsAvailable, item.pair, item.buy.btcValue, btcAvailable, orderBookAll
+  const robot = findRobot(robots, item)
+  if (!robot) return false
+  return !!getAmountAvailableToBuyOfRobot(
+    openOrders, coinsAvailable, robot.pair, robot.buy.amount, amountAvailable, orderBookAll
   )
 }

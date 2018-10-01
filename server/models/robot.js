@@ -11,7 +11,7 @@ const robotSchema = new Schema({
     coveringBid: Boolean,
     upperBreakpointPrice: Number,
     lowerBreakpointPrice: Number,
-    btcValue: Number,
+    amount: Number,
     bidAmountToActive: Number,
     bidAmountToCover: Number,
     askAmountToStop: Number,
@@ -29,7 +29,7 @@ const robotSchema = new Schema({
   },
   nestedBuy: {
     active: Boolean,
-    btc: Number,
+    amount: Number,
     bidMargin: Number,
     numberOfOrders: Number,
     marginOrders: Number,
@@ -37,7 +37,7 @@ const robotSchema = new Schema({
   },
   nestedSell: {
     active: Boolean,
-    bidMargin: Number,
+    askMargin: Number,
     numberOfOrders: Number,
     marginOrders: Number,
     amounts: [Number],

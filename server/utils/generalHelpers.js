@@ -12,6 +12,7 @@ export default {
   calculateMargin,
   fixValue,
   findRobot,
+  getAmountAvailableToBuyOfRobot,
 }
 
 /** Return coins that have btcValue greater than 0.001btc. */
@@ -89,7 +90,7 @@ export const getBTCAvailable = (coinsAvailable) => {
   const btc = coinsAvailable.filter(
     coin => coin.coinName === 'BTC'
   ).pop()
-  return (btc && btc.available) || 0
+  return (btc && parseFloat(btc.available)) || 0
 }
 
 export const hasSellOrder = (openOrders) => {
@@ -111,14 +112,14 @@ export const findRobot = (robots, item) => (
   ).pop()
 )
 
-export const getBtcAvailableToBuyOfRobot = (
-  openOrders, coinsAvailable, pair, robotBtcValue, btcAvailable, orderBookAll
+export const getAmountAvailableToBuyOfRobot = (
+  openOrders, coinsAvailable, pair, robotAmountValue, amountAvailable, orderBookAll
 ) => {
-  if (btcAvailable < 0.0001) return 0
-  const btcInTransaction = getAmountInTransaction(pair, openOrders, coinsAvailable, orderBookAll)
-  if (btcInTransaction >= robotBtcValue) return 0
-  const btcAvailableToBuy = robotBtcValue - btcInTransaction
-  return Math.min(btcAvailableToBuy, btcAvailable)
+  if (amountAvailable < 0.0001) return 0
+  const amountInTransaction = getAmountInTransaction(pair, openOrders, coinsAvailable, orderBookAll)
+  if (amountInTransaction >= robotAmountValue) return 0
+  const amountAvailableToBuy = robotAmountValue - amountInTransaction
+  return fixValue(Math.min(amountAvailableToBuy, amountAvailable))
 }
 
 const getAmountInTransaction = (pair, openOrders, coinsAvailable, orderBookAll) => {
@@ -133,9 +134,11 @@ const getAmountInTransaction = (pair, openOrders, coinsAvailable, orderBookAll) 
       return acc + parseFloat(val.amount * price)
     }, 0)
   sum += coinsAvailable
-    .filter(coin => pair.includes(coin.coinName))
+    .filter(coin => (
+      pair.match(new RegExp(`_${coin.coinName}$`)))
+    )
     .reduce((acc, val) => acc + parseFloat(val.btcValue), 0)
-  return sum
+  return parseFloat(sum.toFixed(8))
 }
 
 const filterOrdersByType = (openOrders, type) => {

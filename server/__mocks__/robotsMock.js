@@ -4,7 +4,7 @@ export const ARRAY_WITH_ONE_ROBOT = [
     pair: 'BTC_NXT',
     paused: false,
     buy: {
-      active: true,
+      active: false,
       coveringBid: false,
       upperBreakpointPrice: 0,
       lowerBreakpointPrice: 0,

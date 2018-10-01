@@ -20,3 +20,22 @@ export const FOUR_COINS = {
     'btcValue': '0.00002',
   },
 }
+
+export const THREE_COINS_NORMALIZED = [
+  {
+    'available': '5.015',
+    'onOrders': '1.0025',
+    'btcValue': '0.078',
+    'coinName': 'LTC',
+  }, {
+    'available': '0.278',
+    'onOrders': '0',
+    'btcValue': '0.278',
+    'coinName': 'BTC',
+  }, {
+    'available': '0',
+    'onOrders': '500',
+    'btcValue': '0.278',
+    'coinName': 'OMNI',
+  },
+]

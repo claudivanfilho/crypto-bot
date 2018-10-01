@@ -2,7 +2,8 @@ import PoloService from './Polo'
 import { getAmountCoin } from '../utils/generalHelpers'
 
 export default {
-  buy: ({ pair, amount, price, user }) => buy({ pair, amount, price, user }),
+  buy: ({ pair, amount, price, user }) => { console.log('get out') },
+  // buy({ pair, amount, price, user }),
   buyImmediate: ({ pair, amount, price, user }) => buy({ pair, amount, price, user }, true),
   move: ({ orderNumber, amount, price, user }) => move({ orderNumber, amount, price, user }),
   moveImmediate: ({ orderNumber, amount, price, user }) => move({ orderNumber, amount, price, user }, true),

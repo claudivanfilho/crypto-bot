@@ -17,14 +17,14 @@ export default {
   doNestedSellOrders,
 }
 
-export const cancelSellOrdersWithSamePair = ({
+export const cancelSellOrdersWithSamePair = async ({
   args: { user, openOrders: { sell: sellOrders } }, item,
 }) => (
   Transaction.cancelOrders(getOrdersWithSamePair(item.pair, sellOrders), user)
 )
 
-export const cancelOrder = ({ args: { user }, item: { orderNumber } }) => (
-  Transaction.cancelOrder({ orderNumber, user })
+export const cancelOrder = async ({ args: { user }, item: { orderNumber } }) => (
+  Transaction.cancel({ orderNumber, user })
 )
 
 export const moveSellToLast = async ({
@@ -53,11 +53,11 @@ export const moveSellToLast = async ({
   }
 }
 
-export const moveSellImmediate = ({
+export const moveSellImmediate = async ({
   args: { user, orderBookAll }, item,
 }) => {
   const lastBidPrice = parseFloat(orderBookAll[item.pair].bids[0][0])
-  return Transaction.moveSellImmediate({
+  return Transaction.moveImmediate({
     orderNumber: item.orderNumber,
     amount: item.amount,
     price: lastBidPrice,
@@ -86,7 +86,7 @@ const moveToPriceMinusOne = async (price, { rate, orderNumber, amount }, user) =
   })
 }
 
-export const sellImmediate = ({
+export const sellImmediate = async ({
   args: { orderBookAll, robots, user }, item,
 }) => {
   const { pair } = findRobot(robots, item)
@@ -104,9 +104,9 @@ export const sellToCoverAskAmount = async ({
 }) => {
   const robot = findRobot(robots, item)
   const lastBidPrice = parseFloat(orderBookAll[robot.pair].bids[0][0])
-  const priceToCover = findBiggerThan(
-    orderBookAll[robot.pair], robot.sell.askAmountToCover, item.rate
-  ).price
+  const { price: priceToCover } = findBiggerThan(
+    orderBookAll[robot.pair].asks, robot.sell.askAmountToCover, item.rate
+  ) || {}
   if (priceToCover) {
     await sellToPriceMinusOne(priceToCover, lastBidPrice, robot.pair, item.available, user)
   }
@@ -116,9 +116,9 @@ export const moveToCoverAskAmount = async ({
   args: { orderBookAll, robots, user }, item,
 }) => {
   const robot = findRobot(robots, item)
-  const priceToCover = findBiggerThan(
-    orderBookAll[robot.pair], robot.sell.askAmountToCover, item.rate
-  ).price
+  const { price: priceToCover } = findBiggerThan(
+    orderBookAll[robot.pair].asks, robot.sell.askAmountToCover, item.rate
+  )
   if (priceToCover) {
     await moveToPriceMinusOne(priceToCover, item, user)
   }
@@ -128,29 +128,32 @@ export const doNestedSellOrders = async ({
   args: { robots, orderBookAll, user }, item,
 }) => {
   const robot = findRobot(robots, item)
-  const lastBidPrice = parseFloat(orderBookAll[robot.pair].bids[0][0])
+  const lastAskPrice = parseFloat(orderBookAll[robot.pair].asks[0][0])
   const nestedSellOrders = getNestedSellOrders(
     item.available,
-    robot.nestedSell.bidMargin,
-    lastBidPrice,
+    robot.nestedSell.askMargin,
+    lastAskPrice,
     robot.nestedSell.numberOfOrders,
     robot.nestedSell.marginOrders,
     robot.nestedSell.amounts
   )
   for (let j = 0; j < nestedSellOrders.length; j++) {
-    await Transaction.sell({
-      pair: robot.pair,
-      amount: nestedSellOrders[j].amount,
-      price: nestedSellOrders[j].price,
-      user,
-    })
+    try {
+      await Transaction.sell({
+        pair: robot.pair,
+        amount: nestedSellOrders[j].amount,
+        price: nestedSellOrders[j].price,
+        user,
+      })
+    // eslint-disable-next-line
+    } catch (err) { }
   }
   return true
 }
 
-const getNestedSellOrders = (amountTotal, bidMargin, bidPrice, numberOfOrders, marginOrders, amounts) => {
+const getNestedSellOrders = (amountTotal, askMargin, askPrice, numberOfOrders, marginOrders, amounts) => {
   const orders = []
-  const pricePlusMargin = parseFloat(bidPrice) + (bidPrice * (bidMargin / 100))
+  const pricePlusMargin = parseFloat(askPrice) + (askPrice * (askMargin / 100))
   let acumulatedAmount = 0
   for (var i = 0; i < numberOfOrders; i++) {
     let amount = 0
