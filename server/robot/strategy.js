@@ -1,5 +1,4 @@
-import RobotRepository from '../repositories/robot'
-import PoloService from '../services/Polo'
+import TraderInfo from './routines/traderInfo'
 import RobotService from '../services/Robot'
 import Helpers from '../utils/index'
 import CO from './conditions/index'
@@ -25,16 +24,23 @@ export default class Strategy {
   }
 
   async applyStrategy() {
-    const openOrdersResponse = await PoloService.fetchOpenOrders(this.user)
-    const openOrders = Helpers.normalizeOpenOrders(openOrdersResponse)
-    const coinsAvailableResponse = await PoloService.fetchCoinsAvailable(this.user)
-    const coinsAvailable = Helpers.filterAvailableCoins(coinsAvailableResponse)
-    const amountAvailable = Helpers.getBTCAvailable(coinsAvailable)
-    const tradeHistory = await PoloService.fetchTradeHistory(this.user, 'all')
-    const robots = await RobotRepository.getRobots()
+    const {
+      openOrders,
+      coinsAvailable,
+      amountAvailable,
+      robots,
+      tradeHistory,
+    } = TraderInfo
+
+    if (!openOrders) return
 
     const argsToCondition = {
-      openOrders, coinsAvailable, amountAvailable, robots, tradeHistory, user: this.user,
+      openOrders,
+      coinsAvailable,
+      amountAvailable,
+      robots,
+      tradeHistory,
+      user: this.user,
     }
 
     // Sell Order Treatments
