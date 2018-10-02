@@ -22,7 +22,6 @@ export default class Strategy {
 
   init = async (intervalStrategy) => {
     try {
-      console.log(amountAvailable)
       // await this.applyStrategy()
       // eslint-disable-next-line
     } catch (err) { }

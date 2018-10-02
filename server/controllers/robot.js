@@ -4,7 +4,7 @@ export default {
 
   getAll: async (res) => {
     const result = await RobotRepository.getAll()
-    return res.json(result)
+    return res.json(result || [])
   },
 
   saveOrUpdate: async (req, res) => {
