@@ -1,33 +1,9 @@
 const Poloniex = require('./../libs/poloniex.js')
 const poloInstance = new Poloniex({ socketTimeout: 40000 })
 
-export default {
-  fetchCoinChart,
-  fetchOpenOrders,
-  fetchOrderBookToAll,
-  fetchOrderBookOfCoin,
-  returnCompleteBalance,
-  returnCompleteBalances,
-  fetchMyTradeHistory,
-  fetchGeneralTradeHistory,
-  fetchTradeHistory,
-  buy,
-  buyImmediate,
-  move,
-  moveImmediate,
-  sell,
-  sellImmediate,
-  cancel,
-}
-
-const fetchOpenOrders = (user) => {
+export const fetchOpenOrders = async (user) => {
   const polo = getPoloInstance(user)
   return polo.returnOpenOrders('all')
-}
-
-const returnCompleteBalance = (coin, user) => {
-  const polo = getPoloInstance(user)
-  return polo.returnCompleteBalances('exchange')
 }
 
 const returnCompleteBalances = (user) => {
@@ -40,7 +16,7 @@ function fetchTradeHistory(pair, start, end, user) {
   return polo.returnTradeHistory(pair, start, end)
 }
 
-function fetchMyTradeHistory(start, end, user, pair) {
+function fetchMyTradeHistory(pair, start, end, user) {
   const polo = getPoloInstance(user)
   return polo.returnMyTradeHistory(pair, start, end)
 }
@@ -98,4 +74,22 @@ function moveImmediate({ orderNumber, price, amount, user }) {
 
 function getPoloInstance(user) {
   return new Poloniex(user.poloniex.key, user.poloniex.secret, { socketTimeout: 40000 })
+}
+
+export default {
+  fetchCoinChart,
+  fetchOpenOrders,
+  fetchOrderBookToAll,
+  fetchOrderBookOfCoin,
+  returnCompleteBalances,
+  fetchMyTradeHistory,
+  fetchGeneralTradeHistory,
+  fetchTradeHistory,
+  buy,
+  buyImmediate,
+  move,
+  moveImmediate,
+  sell,
+  sellImmediate,
+  cancel,
 }

@@ -1,8 +1,15 @@
-import TraderInfo from './routines/traderInfo'
 import RobotService from '../services/Robot'
 import Helpers from '../utils/index'
 import CO from './conditions/index'
 import AC from './actions/index'
+import {
+  tradeHistory,
+  amountAvailable,
+  openOrders,
+  coinsAvailable,
+} from './routines/traderInfo'
+import { robots } from './routines/robot'
+import { orderBook } from './routines/orderBook'
 
 export default class Strategy {
   user = null
@@ -15,23 +22,16 @@ export default class Strategy {
 
   init = async (intervalStrategy) => {
     try {
-      await this.applyStrategy()
+      console.log(amountAvailable)
+      // await this.applyStrategy()
       // eslint-disable-next-line
     } catch (err) { }
     setTimeout(() => {
-      this.init()
+      this.init(intervalStrategy)
     }, intervalStrategy)
   }
 
   async applyStrategy() {
-    const {
-      openOrders,
-      coinsAvailable,
-      amountAvailable,
-      robots,
-      tradeHistory,
-    } = TraderInfo
-
     if (!openOrders) return
 
     const argsToCondition = {
@@ -40,6 +40,7 @@ export default class Strategy {
       amountAvailable,
       robots,
       tradeHistory,
+      orderBookAll: orderBook,
       user: this.user,
     }
 

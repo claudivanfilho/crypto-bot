@@ -43,7 +43,9 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../build', 'index.html'))
 })
 
-// robot.init()
-
+robot.init(
+  process.env.ROBOT_POLONIEX_API_KEY,
+  process.env.ROBOT_POLONIEX_API_SECRET
+)
 app.listen(port)
 console.log(`Server started in the port ${port}`)

@@ -1,29 +1,35 @@
 import Strategy from './strategy'
-import OrderBook from './routines/orderBook'
+import OrderBook, { orderBook } from './routines/orderBook'
+import TraderInfo, { tradeHistory } from './routines/traderInfo'
 
-const INTERVAL_STRATEGY = 500 // milliseconds
+const DELAY_STRATEGY = 500 // milliseconds
+const DELAY_TRY_INIT_STRATEGY = 1000 // milliseconds
 
 const user = {
   poloniex: {
-    key: process.env.ROBOT_POLONIEX_API_KEY,
-    secret: process.env.ROBOT_POLONIEX_API_SECRET,
+    key: '',
+    secret: '',
   },
 }
 
 export default {
-  init: () => {
+  init: (key, secret) => {
+    user.poloniex.key = key
+    user.poloniex.secret = secret
     OrderBook.init()
+    TraderInfo.init(user)
     initStrategy()
   },
 }
 
 const initStrategy = () => {
-  if (!OrderBook.orderBook) {
+  if (!orderBook || !tradeHistory) {
     setTimeout(() => {
       initStrategy()
-    }, 1000)
+    }, DELAY_TRY_INIT_STRATEGY)
   } else {
+    console.log('Starting strategy')
     const strategy = new Strategy(user, process.env.NODE_ENV)
-    strategy.init(INTERVAL_STRATEGY)
+    strategy.init(DELAY_STRATEGY)
   }
 }

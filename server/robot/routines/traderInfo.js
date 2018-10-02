@@ -1,35 +1,30 @@
 import PoloService from '../../services/Polo'
 import Helpers from '../../utils/index'
-import RobotRepository from '../repositories/robot'
+import moment from 'moment'
 
 const INTERVAL_TIME_TRADER_INFO = 500
 
-export default class OrderBook {
-  static tradeHistory = null
-  static robots = null
-  static openOrders = null
-  static coinsAvailable = null
-  static amountAvailable = null
+export let tradeHistory = null
+export let openOrders = null
+export let amountAvailable = null
+export let coinsAvailable = null
 
+export default class TraderInfo {
   static init = async (user) => {
-    const openOrdersResponse = await PoloService.fetchOpenOrders(user)
-    const openOrders = Helpers.normalizeOpenOrders(openOrdersResponse)
-    const coinsAvailableResponse = await PoloService.fetchCoinsAvailable(user)
-    const coinsAvailable = Helpers.filterAvailableCoins(coinsAvailableResponse)
-    const amountAvailable = Helpers.getBTCAvailable(coinsAvailable)
-    const tradeHistory = await PoloService.fetchTradeHistory(user, 'all')
-    const robots = await RobotRepository.getRobots()
+    try {
+      const openOrdersResponse = await PoloService.fetchOpenOrders(user)
+      openOrders = Helpers.normalizeOpenOrders(openOrdersResponse)
+      const coinsAvailableResponse = await PoloService.returnCompleteBalances(user)
+      coinsAvailable = Helpers.filterAvailableCoins(coinsAvailableResponse)
+      amountAvailable = Helpers.getBTCAvailable(coinsAvailable)
+      const start = moment().subtract(90, 'day').startOf('day').unix()
+      const end = moment().unix()
+      tradeHistory = await PoloService.fetchMyTradeHistory('all', start, end, user)
+    // eslint-disable-next-line
+    } catch(err) { }
 
-    this.robots = robots
-    this.tradeHistory = tradeHistory
-    this.openOrders = openOrders
-    this.amountAvailable = amountAvailable
-    this.coinsAvailable = coinsAvailable
-  }
-
-  recall = () => {
     setTimeout(() => {
-      this.init()
+      TraderInfo.init(user)
     }, INTERVAL_TIME_TRADER_INFO)
   }
 }

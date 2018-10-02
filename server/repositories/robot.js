@@ -10,8 +10,8 @@ export default {
     return Robot.create({ ...data, pair })
   },
 
-  getAll: () => (Robot.find()),
+  getAll: () => Robot.find({}),
 
-  getRobot: (pair) => (Robot.findOne({ pair })),
+  getRobot: (pair) => Robot.findOne({ pair }),
 
 }

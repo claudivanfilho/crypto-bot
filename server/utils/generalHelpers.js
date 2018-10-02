@@ -1,20 +1,3 @@
-export default {
-  filterAvailableCoins,
-  normalizeOpenOrders,
-  getAmountCoin,
-  getOrdersWithSamePair,
-  getSmartPriceOfBuy,
-  getProfit,
-  hasMoreThanOne,
-  getBTCAvailable,
-  hasSellOrder,
-  hasBuyOrders,
-  calculateMargin,
-  fixValue,
-  findRobot,
-  getAmountAvailableToBuyOfRobot,
-}
-
 /** Return coins that have btcValue greater than 0.001btc. */
 export const filterAvailableCoins = (balances) => (
   Object.keys(balances).map(key => ({
@@ -148,5 +131,22 @@ const filterOrdersByType = (openOrders, type) => {
     )).filter(order => order.type === type)
     return [...acc, ...ordersFiltered]
   }, [])
+}
+
+export default {
+  filterAvailableCoins,
+  normalizeOpenOrders,
+  getAmountCoin,
+  getOrdersWithSamePair,
+  getSmartPriceOfBuy,
+  getProfit,
+  hasMoreThanOne,
+  getBTCAvailable,
+  hasSellOrder,
+  hasBuyOrders,
+  calculateMargin,
+  fixValue,
+  findRobot,
+  getAmountAvailableToBuyOfRobot,
 }
 
