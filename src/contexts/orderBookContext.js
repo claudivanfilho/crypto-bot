@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import API from '../api'
 import { SelectedItemConsumer } from './selectedItemContext'
+import { equals } from 'ramda'
 
 const OrderBookContext = React.createContext()
 
@@ -25,8 +26,10 @@ class OrderBookProviderClass extends Component {
 
   fetchOrderBook = () => {
     if (this.props.pair) {
-      API.fetchOrderBook({ deep: 15, pair: this.props.pair }).then(res => {
-        this.setState({ orderBook: res })
+      API.fetchOrderBook({ deep: 25, pair: this.props.pair }).then(res => {
+        if (!equals(this.state.orderBook, res)) {
+          this.setState({ orderBook: res })
+        }
       })
     }
   }

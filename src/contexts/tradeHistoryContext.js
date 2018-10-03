@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import API from '../api'
 import { SelectedItemConsumer } from './selectedItemContext'
+import { equals } from 'ramda'
 
 const TradeHistoryContext = React.createContext()
 
@@ -14,7 +15,7 @@ class TradeHistoryProviderClass extends Component {
   }
 
   state = {
-    tradeHistory: {},
+    tradeHistory: [],
   }
 
   componentWillUnmount() {
@@ -32,7 +33,9 @@ class TradeHistoryProviderClass extends Component {
         start: this.props.start,
         end: this.props.end,
       }).then(res => {
-        this.setState({ tradeHistory: res })
+        if (!equals(this.state.tradeHistory, res)) {
+          this.setState({ tradeHistory: res })
+        }
       })
     }
   }

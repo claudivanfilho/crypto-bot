@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import API from '../api'
 import { SelectedItemConsumer } from './selectedItemContext'
 import moment from 'moment'
+import { equals } from 'ramda'
 
 const ChartContext = React.createContext()
 
@@ -13,7 +14,7 @@ class ChartProviderClass extends Component {
   }
 
   state = {
-    chartData: {},
+    chartData: [],
     start: moment().subtract(90, 'day').startOf('day').unix(),
     end: moment().unix(),
     // periods 300, 900, 1800, 7200, 14400, and 86400
@@ -36,7 +37,9 @@ class ChartProviderClass extends Component {
         end: this.state.end,
         period: this.state.period,
       }).then(res => {
-        this.setState({ chartData: res })
+        if (!equals(this.state.chartData, res)) {
+          this.setState({ chartData: res })
+        }
       })
     }
   }

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import API from '../api'
+import { equals } from 'ramda'
 
 const MyTradeHistoryContext = React.createContext()
 
@@ -10,7 +11,7 @@ export class MyTradeHistoryProvider extends Component {
   }
 
   state = {
-    myTradeHistory: {},
+    myTradeHistory: [],
   }
 
   componentWillUnmount() {
@@ -23,7 +24,9 @@ export class MyTradeHistoryProvider extends Component {
 
   fetchMyTradeHistory = () => {
     API.fetchMyTradeHistory().then(res => {
-      this.setState({ myTradeHistory: res })
+      if (!equals(this.state.myTradeHistory, res)) {
+        this.setState({ myTradeHistory: res })
+      }
     })
   }
 

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import API from '../api'
+import { equals } from 'ramda'
 
 const RobotsContext = React.createContext()
 
@@ -10,7 +11,7 @@ export class RobotsProvider extends Component {
   }
 
   state = {
-    robots: {},
+    robots: [],
   }
 
   componentDidMount() {
@@ -19,7 +20,9 @@ export class RobotsProvider extends Component {
 
   fetchRobots = () => {
     API.fetchRobots().then(res => {
-      this.setState({ robots: res })
+      if (!equals(this.state.robots, res)) {
+        this.setState({ robots: res })
+      }
     })
   }
 

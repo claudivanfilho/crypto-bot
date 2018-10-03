@@ -22,7 +22,7 @@ export class SelectedItemProvider extends Component {
     return (
       <SelectedItemContext.Provider
         value={{
-          selectedItem: this.state.selectedItem,
+          selectedItem: { pair: 'BTC_NXT' },
           updateSelectedItem: this.updateSelectedItem,
         }}
       >

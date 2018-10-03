@@ -1,16 +1,17 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import API from '../api'
+import { equals } from 'ramda'
 
-const CoinsAvailbleContext = React.createContext()
+const CoinsAvailableContext = React.createContext()
 
-export class CoinsAvailbleProvider extends Component {
+export class CoinsAvailableProvider extends Component {
   static propTypes = {
     children: PropTypes.any,
   }
 
   state = {
-    coinsAvailable: {},
+    coinsAvailable: [],
   }
 
   componentWillUnmount() {
@@ -18,12 +19,14 @@ export class CoinsAvailbleProvider extends Component {
   }
 
   componentDidMount() {
-    this.coinsAvailableInterval = setInterval(this.fetchCoinsAvailble, 1000)
+    this.coinsAvailableInterval = setInterval(this.fetchCoinsAvailable, 1000)
   }
 
-  fetchCoinsAvailble = () => {
-    API.fetchCoinsAvailble().then(res => {
-      this.setState({ coinsAvailable: res })
+  fetchCoinsAvailable = () => {
+    API.fetchCoinsAvailable().then(res => {
+      if (!equals(this.state.coinsAvailable, res) && Array.isArray(res)) {
+        this.setState({ coinsAvailable: res })
+      }
     })
   }
 
@@ -31,15 +34,15 @@ export class CoinsAvailbleProvider extends Component {
     const { children } = this.props
 
     return (
-      <CoinsAvailbleContext.Provider
+      <CoinsAvailableContext.Provider
         value={{
           coinsAvailable: this.state.coinsAvailable,
         }}
       >
         {children}
-      </CoinsAvailbleContext.Provider>
+      </CoinsAvailableContext.Provider>
     )
   }
 }
 
-export const CoinsAvailbleConsumer = CoinsAvailbleContext.Consumer
+export const CoinsAvailableConsumer = CoinsAvailableContext.Consumer

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import API from '../api'
+import { equals } from 'ramda'
 
 const OpenOrdersContext = React.createContext()
 
@@ -23,7 +24,9 @@ export class OpenOrdersProvider extends Component {
 
   fetchOpenOrders = () => {
     API.fetchOpenOrders().then(res => {
-      this.setState({ openOrders: res })
+      if (!equals(this.state.openOrders, res)) {
+        this.setState({ openOrders: res })
+      }
     })
   }
 

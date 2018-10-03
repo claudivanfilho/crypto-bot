@@ -1,5 +1,3 @@
-import './styles.css'
-import './tachyons.css'
 import './semantic.min.css'
 
 import React from 'react'
