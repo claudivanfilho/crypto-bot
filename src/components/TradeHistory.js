@@ -9,9 +9,7 @@ class CoinsAvailable extends Component {
   }
 
   render() {
-    console.log(this.props.tradeHistory)
-    if (!this.props.tradeHistory) return <div>Loading</div>
-
+    if (!this.props.tradeHistory.length) return null
     return (
       <div>
         <div className="flex justify-between">

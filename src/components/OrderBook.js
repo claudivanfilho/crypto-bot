@@ -9,6 +9,7 @@ class OrderBook extends Component {
     orderBook: PropTypes.object,
   }
   render() {
+    if (!this.props.orderBook.bids) return null
     return (
       <Fragment>
         {/* <h5 className="ma1 flex justify-center">Bids</h5> */}

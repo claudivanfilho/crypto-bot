@@ -12,9 +12,9 @@ export class SelectedItemProvider extends Component {
     selectedItem: {},
   }
 
-  updateSelectedItem = (item) => {
+  setSelectedItem = (item) => (
     this.setState({ selectedItem: item })
-  }
+  )
 
   render() {
     const { children } = this.props
@@ -22,8 +22,8 @@ export class SelectedItemProvider extends Component {
     return (
       <SelectedItemContext.Provider
         value={{
-          selectedItem: { pair: 'BTC_NXT' },
-          updateSelectedItem: this.updateSelectedItem,
+          selectedItem: this.state.selectedItem,
+          setSelectedItem: this.setSelectedItem,
         }}
       >
         {children}
