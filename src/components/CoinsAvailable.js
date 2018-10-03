@@ -1,7 +1,8 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { CoinsAvailableConsumer } from '../contexts/coinsAvailableContext'
 import PropTypes from 'prop-types'
 import ItemSelectable from './ItemSelectable'
+import coinIcon from '../images/coin.svg'
 
 class CoinsAvailable extends Component {
   static propTypes = {
@@ -15,25 +16,32 @@ class CoinsAvailable extends Component {
 
   render() {
     if (!this.props.coinsAvailable) return <div>Loading</div>
-    return this.props.coinsAvailable.map(coin => (
-      <ItemSelectable
-        key={coin.coinName}
-        item={{ ...coin, pair: this.getPair(coin.coinName) }}
-      >
-        {(isSelected) => {
-          return (
-            <div className="ui labeled button" tabIndex="0">
-              <div className="ui green button f6">
-                {coin.coinName}
-              </div>
-              <a className={`ui basic breen left pointing label f6 ${isSelected ? 'bg-success white' : ''}`}>
-                {coin.btcValue}
-              </a>
-            </div>
-          )
-        }}
-      </ItemSelectable>
-    ))
+    return (
+      <Fragment>
+        <img height="24" src={coinIcon} className="dn flex-ns ml2 mr3" />
+        {
+          this.props.coinsAvailable.map(coin => (
+            <ItemSelectable
+              key={coin.coinName}
+              item={{ ...coin, pair: this.getPair(coin.coinName) }}
+            >
+              {(isSelected) => {
+                return (
+                  <div className="mb3 mb0-ns ui labeled button" tabIndex="0">
+                    <div className="ui green button f7">
+                      {coin.coinName}
+                    </div>
+                    <a className={`ui basic breen left pointing label f7 ${isSelected ? 'bg-success white' : ''}`}>
+                      {coin.btcValue}
+                    </a>
+                  </div>
+                )
+              }}
+            </ItemSelectable>
+          ))
+        }
+      </Fragment>
+    )
   }
 }
 

@@ -14,10 +14,14 @@ class ItemSelectable extends Component {
     this.props.selectedItem.pair && this.props.selectedItem.pair.toLowerCase() === this.props.item.pair.toLowerCase()
   )
 
+  isSelectedOrder = () => (
+    this.props.selectedItem.orderNumber && this.props.selectedItem.orderNumber === this.props.item.orderNumber
+  )
+
   render() {
     return (
       <div onClick={() => this.props.setSelectedItem(this.props.item)}>
-        {this.props.children(this.isSelectedItem())}
+        {this.props.children(this.isSelectedItem(), this.isSelectedOrder())}
       </div>
     )
   }

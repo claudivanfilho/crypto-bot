@@ -11,7 +11,7 @@ export class OpenOrdersProvider extends Component {
   }
 
   state = {
-    openOrders: {},
+    openOrders: { buy: [], sell: [] },
   }
 
   componentWillUnmount() {

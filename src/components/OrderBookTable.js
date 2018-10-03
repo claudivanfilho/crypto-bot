@@ -23,7 +23,7 @@ export default class OrderBookTable extends Component {
           <span className="w-33 flex justify-start">Total</span>
           <span className="w-33 flex justify-start">Sum</span>
         </div>
-        <div className="overflow-y-auto overflow-x-hidden" style={{ height: '30rem' }}>
+        <div className="overflow-y-auto" style={{ height: '30rem' }}>
           <table className={`ui ${this.props.color} unstackable table ma0`}>
             <tbody>
               {this.props.orders.map((order, index) => (

@@ -2,10 +2,19 @@ import React, { Component } from 'react'
 import { TradeHistoryConsumer } from '../contexts/tradeHistoryContext'
 import PropTypes from 'prop-types'
 import Moment from 'react-moment'
+import 'moment-timezone'
+import moment from 'moment'
 
 class CoinsAvailable extends Component {
   static propTypes = {
     tradeHistory: PropTypes.array,
+  }
+
+  getDate(date) {
+    const utcOffset = moment().utcOffset()
+    const d = moment(`${date} +0000`, 'YYYY-MM-DD HH:mm:ss Z')
+    d.utcOffset(utcOffset)
+    return d.valueOf()
   }
 
   render() {
@@ -17,7 +26,7 @@ class CoinsAvailable extends Component {
           <span className="w-33 flex justify-start pl5">Price</span>
           <span className="w-33 flex justify-start pl5">Total</span>
         </div>
-        <div className="overflow-y-auto overflow-x-hidden" style={{ height: '30rem' }}>
+        <div className="overflow-y-auto overflow-x-hidden" style={{ height: '20rem' }}>
           <table className="ui gray unstackable table ma0">
             <tbody>
               {this.props.tradeHistory.map(transaction => (
@@ -26,8 +35,8 @@ class CoinsAvailable extends Component {
                   key={transaction.globalTradeID}
                 >
                   <td>
-                    <Moment subtract={{ hours: 3 }} fromNow>{
-                      transaction.date}
+                    <Moment fromNow>
+                      {this.getDate(transaction.date)}
                     </Moment>
                   </td>
                   <td>{transaction.rate}</td>
