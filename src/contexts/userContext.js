@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import API from '../api'
-import { equals } from 'ramda'
 
 const UserContext = React.createContext()
 
@@ -25,6 +24,10 @@ export class UserProvider extends Component {
     }).catch(() => this.setState({ loading: false }))
   }
 
+  setUser = (data) => {
+    this.setState({ user: { ...data } })
+  }
+
   render() {
     const { children } = this.props
 
@@ -33,6 +36,7 @@ export class UserProvider extends Component {
         value={{
           user: this.state.user,
           loading: this.state.loading,
+          setUser: this.setUser,
         }}
       >
         {children}

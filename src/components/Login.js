@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
-import API from '../api'
 import PropTypes from 'prop-types'
-import { UserConsumer } from '../contexts/userContext'
+
 import { withRouter } from 'react-router-dom'
+import { UserConsumer } from '../contexts/userContext'
+import API from '../api'
 
 class Login extends Component {
   static propTypes = {
     user: PropTypes.object,
+    setUser: PropTypes.func,
     loading: PropTypes.bool,
     history: PropTypes.any,
   }
@@ -20,9 +22,10 @@ class Login extends Component {
   handleEmailChange = (evt) => this.setState({ email: evt.target.value })
   handleCodeChange = (evt) => this.setState({ code: evt.target.value })
 
-  handleEnterWithoutLogin = () => API.enterWithoutLogin().then(() => (
+  handleEnterWithoutLogin = () => API.enterWithoutLogin().then(() => {
+    this.props.setUser({ anonymous: true })
     this.props.history.push('/')
-  ))
+  })
 
   handleSendEmail = () => {
     if (this.state.email) {
@@ -84,7 +87,9 @@ class Login extends Component {
   )
 
   render() {
-    if (!this.props.loading && this.props.user) window.location.assign('/')
+    if (!this.props.loading && this.props.user) {
+      this.props.history.push('/')
+    }
     if (this.props.loading) return null
     return (
       <div className="w-100 h-100 absolute bg-near-white">
@@ -115,11 +120,12 @@ const LoginWithRouter = withRouter(Login)
 export default function ComponentWithContext(props) {
   return (
     <UserConsumer>
-      {({ user, loading }) => (
+      {({ user, loading, setUser }) => (
         <LoginWithRouter
           {...props}
           user={user}
-          loading={loading} />
+          loading={loading}
+          setUser={setUser} />
       )}
     </UserConsumer>
   )

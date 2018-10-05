@@ -10,6 +10,7 @@ import { OpenOrdersProvider } from '../contexts/openOrdersContext'
 import { MyTradeHistoryProvider } from '../contexts/myTradeHistoryContext'
 import { ChartProvider } from '../contexts/chartContext'
 
+import { withRouter } from 'react-router-dom'
 import { UserConsumer } from '../contexts/userContext'
 
 import Layout from './Layout'
@@ -18,11 +19,13 @@ class App extends Component {
   static propTypes = {
     user: PropTypes.object,
     loading: PropTypes.bool,
+    history: PropTypes.any,
   }
 
   render() {
-    if (!this.props.user && !this.props.loading) window.location.assign('/auth/login')
-    if (this.props.loading) return null
+    if (!this.props.user && !this.props.loading) {
+      this.props.history.push('/login')
+    }
     return (
       <SelectedItemProvider>
         <CoinsAvailableProvider>
@@ -44,12 +47,13 @@ class App extends Component {
     )
   }
 }
+const ComponentWithRouter = withRouter(App)
 
 export default function ComponentWithContext(props) {
   return (
     <UserConsumer>
       {({ user, loading }) => (
-        <App
+        <ComponentWithRouter
           {...props}
           user={user}
           loading={loading} />

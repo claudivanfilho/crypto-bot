@@ -19,11 +19,11 @@ export default {
     return fetch(url)
       .then(res => res.json())
   },
-  fetchRobots: () => fetch('api/v1/robots').then(res => res.json()),
+  fetchRobots: () => fetch('/api/v1/robots').then(res => res.json()),
   updateRobot: () => {},
-  fetchCoinsAvailable: () => fetch('api/v1/coinsAvailable').then(res => res.json()),
-  fetchOpenOrders: () => fetch('api/v1/openOrders').then(res => res.json()),
-  fetchMyTradeHistory: () => fetch('api/v1/tradeHistory').then(res => res.json()),
+  fetchCoinsAvailable: () => fetch('/api/v1/coinsAvailable').then(res => res.json()),
+  fetchOpenOrders: () => fetch('/api/v1/openOrders').then(res => res.json()),
+  fetchMyTradeHistory: () => fetch('/api/v1/tradeHistory').then(res => res.json()),
   fetchChart: ({
     pair = 'All',
     start,
