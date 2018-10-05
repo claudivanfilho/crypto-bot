@@ -23,12 +23,9 @@ const userSchema = new Schema({
   id: String,
   provider: String,
   displayName: String,
-  emails: [
-    {
-      value: String,
-      type: String,
-    },
-  ],
+  verificationCode: String,
+  expirationDate: Date,
+  email: '',
   photos: [
     {
       value: String,

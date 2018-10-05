@@ -3,11 +3,12 @@ import UserValidator from './validators/user'
 
 export default {
 
-  dto: (user) => ({
+  dto: (user) => (user && {
     displayName: user.displayName,
     picture: user.picture,
     language: user.language,
     mainCoin: user.mainCoin,
+    anonymous: user.anonymous,
   }),
 
   create: (data) => UserModel.create(data),

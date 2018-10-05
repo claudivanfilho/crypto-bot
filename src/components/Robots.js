@@ -9,9 +9,10 @@ class Robots extends Component {
     robots: PropTypes.array,
   }
   render() {
+    if (!Array.isArray(this.props.robots)) return null
     return (
       <Fragment>
-        <img height="26" src={droid} className="dn flex-ns mr3" />
+        <img alt="robot-icon" height="26" src={droid} className="dn flex-ns mr3" />
         {this.props.robots.map(robot => (
           <ItemSelectable key={robot.pair} item={robot}>
             {(isSelected) => (

@@ -20,7 +20,7 @@ export class RobotsProvider extends Component {
 
   fetchRobots = () => {
     API.fetchRobots().then(res => {
-      if (!equals(this.state.robots, res)) {
+      if (!equals(this.state.robots, res) && Array.isArray(res)) {
         this.setState({ robots: res })
       }
     })

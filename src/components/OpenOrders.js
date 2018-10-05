@@ -10,7 +10,10 @@ class OpenOrders extends Component {
   }
 
   render() {
-    const orders = [...this.props.openOrders.buy, ...this.props.openOrders.sell]
+    if (!this.props.openOrders) return null
+    const buyOrders = this.props.openOrders.buy || []
+    const sellOrders = this.props.openOrders.sell || []
+    const orders = [...buyOrders, ...sellOrders]
     // const orders = [{
     //   type: 'buy',
     //   orderNumber: 1,
@@ -24,7 +27,7 @@ class OpenOrders extends Component {
     // }]
     return (
       <Fragment>
-        <img height="26" src={ordersIcon} className="dn flex-ns mr3" />
+        <img alt="open-icon" height="26" src={ordersIcon} className="dn flex-ns mr3" />
         {orders.map(order => (
           <ItemSelectable key={order.pair} item={order}>
             {(_, isSelectedOrder) => (

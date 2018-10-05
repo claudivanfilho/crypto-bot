@@ -15,10 +15,10 @@ class CoinsAvailable extends Component {
   }
 
   render() {
-    if (!this.props.coinsAvailable) return <div>Loading</div>
+    if (!this.props.coinsAvailable) return null
     return (
       <Fragment>
-        <img height="24" src={coinIcon} className="dn flex-ns ml2 mr3" />
+        <img alt="coins-icon" height="24" src={coinIcon} className="dn flex-ns ml2 mr3" />
         {
           this.props.coinsAvailable.map(coin => (
             <ItemSelectable

@@ -2,6 +2,7 @@
 const POLO_HOST_URL = 'https://poloniex.com/public?'
 
 export default {
+  fetchUser: () => fetch('/user').then(res => res.json()),
   fetchOrderBook: ({ pair = 'All', deep = 15 }) => (
     fetch(`${POLO_HOST_URL}command=returnOrderBook&
       currencyPair=${pair}&depth=${deep}`)
@@ -36,4 +37,36 @@ export default {
     return fetch(url)
       .then(res => res.json())
   },
+  enterWithoutLogin: () => (
+    fetch('/auth/anonymous', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(res => res.json())
+  ),
+  sendCode: (code) => (
+    fetch('/auth/code', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code }),
+    })
+      .then(res => res.json())
+  ),
+  sendEmailCode: (email) => (
+    fetch('/auth/email', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    })
+      .then(res => res.json())
+  ),
 }

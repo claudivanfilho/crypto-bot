@@ -2,11 +2,13 @@ import UserRepository from '../repositories/user.js'
 
 export default {
 
-  get: (req) => UserRepository.dto(req.user),
+  get: (req, res) => {
+    res.json(UserRepository.dto(req.user))
+  },
 
   create: async ({ body: data }, res) => {
     const result = await UserRepository.create(data)
-    res.send(result)
+    res.json(result)
   },
 
   update: async ({ user, body: data, login }, res, next) => {
