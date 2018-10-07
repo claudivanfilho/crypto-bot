@@ -5,5 +5,4 @@ lib
 coverage
 dist
 .env
-build
 .vscode
