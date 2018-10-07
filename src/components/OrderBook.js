@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
-import { OrderBookConsumer } from '../contexts/orderBookContext'
 import PropTypes from 'prop-types'
 
+import { withOrderBook } from '../hocs/withOrderBook'
 import OrderBookTable from './OrderBookTable'
 
 class OrderBook extends Component {
@@ -27,14 +27,4 @@ class OrderBook extends Component {
   }
 }
 
-export default function ComponentWithContext(props) {
-  return (
-    <OrderBookConsumer>
-      {({ orderBook }) => (
-        <OrderBook
-          {...props}
-          orderBook={orderBook} />
-      )}
-    </OrderBookConsumer>
-  )
-}
+export default withOrderBook(OrderBook)

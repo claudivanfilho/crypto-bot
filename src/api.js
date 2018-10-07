@@ -2,10 +2,54 @@
 const POLO_HOST_URL = 'https://poloniex.com/public?'
 
 export default {
+  sell: (pair, amount, price) => fetch('/api/v1/sell', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ pair, amount, price }),
+  }).then(res => res.json()),
+  sellImmediate: (pair, amount, price) => fetch('/api/v1/sellImmediate', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ pair, amount, price }),
+  }).then(res => res.json()),
+  buy: (pair, amount, price) => fetch('/api/v1/buy', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ pair, amount, price }),
+  }).then(res => res.json()),
+  buyImmediate: (pair, amount, price) => fetch('/api/v1/buyImmediate', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ pair, amount, price }),
+  }).then(res => res.json()),
+  cancel: (orderNumber) => fetch('/api/v1/cancel', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ orderNumber }),
+  }).then(res => res.json()),
   fetchUser: () => fetch('/user').then(res => res.json()),
   fetchOrderBook: ({ pair = 'All', deep = 15 }) => (
     fetch(`${POLO_HOST_URL}command=returnOrderBook&
       currencyPair=${pair}&depth=${deep}`)
+      .then(res => res.json())
+  ),
+  fetchTicker: () => (
+    fetch(`${POLO_HOST_URL}command=returnTicker`)
       .then(res => res.json())
   ),
   fetchTradeHistory: ({
@@ -23,7 +67,9 @@ export default {
   updateRobot: () => {},
   fetchCoinsAvailable: () => fetch('/api/v1/coinsAvailable').then(res => res.json()),
   fetchOpenOrders: () => fetch('/api/v1/openOrders').then(res => res.json()),
-  fetchMyTradeHistory: () => fetch('/api/v1/tradeHistory').then(res => res.json()),
+  fetchMyTradeHistory: (pair) => fetch(
+    `/api/v1/tradeHistory?pair=${pair}`
+  ).then(res => res.json()),
   fetchChart: ({
     pair = 'All',
     start,
@@ -34,8 +80,7 @@ export default {
     if (start) url += `&start=${start}`
     if (end) url += `&end=${end}`
     if (period) url += `&period=${period}`
-    return fetch(url)
-      .then(res => res.json())
+    return fetch(url).then(res => res.json())
   },
   enterWithoutLogin: () => (
     fetch('/auth/anonymous', {
@@ -44,8 +89,7 @@ export default {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
-    })
-      .then(res => res.json())
+    }).then(res => res.json())
   ),
   sendCode: (code) => (
     fetch('/auth/code', {
@@ -55,8 +99,7 @@ export default {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ code }),
-    })
-      .then(res => res.json())
+    }).then(res => res.json())
   ),
   sendEmailCode: (email) => (
     fetch('/auth/email', {
@@ -66,7 +109,6 @@ export default {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ email }),
-    })
-      .then(res => res.json())
+    }).then(res => res.json())
   ),
 }

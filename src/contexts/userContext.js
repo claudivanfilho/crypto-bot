@@ -37,6 +37,7 @@ export class UserProvider extends Component {
           user: this.state.user,
           loading: this.state.loading,
           setUser: this.setUser,
+          fetchUser: this.fetchUser,
         }}
       >
         {children}

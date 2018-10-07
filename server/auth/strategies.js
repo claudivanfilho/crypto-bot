@@ -24,7 +24,7 @@ export default (app) => {
     callbackURL: process.env.FACE_CALLBACK_URL,
     profileFields: ['emails', 'displayName', 'gender', 'name', 'picture'],
   }, async (accessToken, refreshToken, profile, done) => {
-    const userFound = await UserRepository.findOne({ id: profile.id, provider: profile.provider })
+    let userFound = await UserRepository.findOne({ id: profile.id, provider: profile.provider })
     if (!userFound) {
       const userData = {
         id: profile.id,
@@ -32,10 +32,15 @@ export default (app) => {
         provider: profile.provider,
         picture: JSON.parse(profile._raw).picture.data.url,
       }
-      const userCreated = await UserRepository.create(userData)
-      if (!userCreated) done(null, null)
-      else done(null, userCreated)
+      userFound = await UserRepository.create(userData)
+    }
+    if (!userFound) {
+      done(null, null)
     } else {
+      userFound.poloniex = {
+        key: process.env.ROBOT_POLONIEX_API_KEY,
+        secret: process.env.ROBOT_POLONIEX_API_SECRET,
+      }
       done(null, userFound)
     }
   }))
@@ -47,6 +52,10 @@ export default (app) => {
       if (userFound) {
         const isValid = isCodeValid(code, userFound)
         if (isValid) {
+          userFound.poloniex = {
+            key: process.env.ROBOT_POLONIEX_API_KEY,
+            secret: process.env.ROBOT_POLONIEX_API_SECRET,
+          }
           done(null, userFound)
         }
         done(null, null)
@@ -60,6 +69,11 @@ export default (app) => {
     async (req, done) => {
       done(null, {
         anonymous: true,
+        // TODO remove this
+        // poloniex: {
+        //   key: process.env.ROBOT_POLONIEX_API_KEY,
+        //   secret: process.env.ROBOT_POLONIEX_API_SECRET,
+        // },
       })
     }
   ))

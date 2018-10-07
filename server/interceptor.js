@@ -16,6 +16,7 @@ export default interceptor((req, res) => {
           if (process.env.EMAIL_AUTHORIZED === req.user.email) {
             send(body)
           } else if (isAnonymous(req)) {
+            // send(body)
             res.json({})
           } else {
             res.json({})
@@ -26,6 +27,7 @@ export default interceptor((req, res) => {
       } else {
         if (isAPIResource(req)) {
           res.json({})
+          // send(body)
         } else {
           if (!isCodeResource(req)) {
             send(body)

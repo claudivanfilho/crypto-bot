@@ -1,18 +1,16 @@
 import React, { Component, Fragment } from 'react'
-import { CoinsAvailableConsumer } from '../contexts/coinsAvailableContext'
 import PropTypes from 'prop-types'
 import ItemSelectable from './ItemSelectable'
 import coinIcon from '../images/coin.svg'
+
+import { withCoinsAvailable } from '../hocs/withCoinsAvailable'
 
 class CoinsAvailable extends Component {
   static propTypes = {
     coinsAvailable: PropTypes.array,
   }
 
-  getPair = (coinName) => {
-    if (coinName === 'BTC') return 'USDT_BTC'
-    return `BTC_${coinName}`
-  }
+  getPair = (coinName) => `BTC_${coinName}`
 
   render() {
     if (!this.props.coinsAvailable) return null
@@ -45,15 +43,4 @@ class CoinsAvailable extends Component {
   }
 }
 
-export default function ComponentWithContext(props) {
-  return (
-    <CoinsAvailableConsumer>
-      {({ coinsAvailable }) => (
-        <CoinsAvailable
-          {...props}
-          coinsAvailable={coinsAvailable}
-        />
-      )}
-    </CoinsAvailableConsumer>
-  )
-}
+export default withCoinsAvailable(CoinsAvailable)

@@ -20,7 +20,9 @@ class ItemSelectable extends Component {
 
   render() {
     return (
-      <div onClick={() => this.props.setSelectedItem(this.props.item)}>
+      <div onClick={() => (
+        this.props.item.pair !== 'BTC_BTC' && this.props.setSelectedItem(this.props.item)
+      )}>
         {this.props.children(this.isSelectedItem(), this.isSelectedOrder())}
       </div>
     )

@@ -1,51 +1,26 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+
 import { withSelectedItem } from '../hocs/withSelectedItem'
+import CoinAvailablePanel from './panels/CoinAvailablePanel'
+import OrderPanel from './panels/OrderPanel'
 
 class ItemSelected extends Component {
   static propTypes = {
     selectedItem: PropTypes.object,
   }
 
-  renderBuyOrder = () => (
-    <div>Buy Order</div>
-  )
-
-  renderSellOrder = () => (
-    <div>Sell Order</div>
-  )
-
-  renderLineData = (label, value) => (
-    <div className="item">
-      <div className="description">
-        {label}: <a>{value}</a>
-      </div>
-    </div>
-  )
-
-  renderCoinAvailable = () => {
-    return (
-      <div className="ui celled horizontal list">
-        {this.renderLineData('Available', this.props.selectedItem.btcValue)}
-        {this.renderLineData('Create Sell Order', (
-          <div>Sasdask</div>
-        ))}
-      </div>
-    )
-  }
-
   render() {
     const { selectedItem: item } = this.props
     if (!item.pair) return null
     let content = null
-    console.log(item)
-    if (item.rate && item.type === 'buy') content = this.renderBuyOrder()
-    if (item.rate && item.type === 'sell') content = this.renderSellOrder()
-    if (item.available) content = this.renderCoinAvailable()
+    if (item.rate && item.type === 'buy') content = <OrderPanel item={item} />
+    if (item.rate && item.type === 'sell') content = <OrderPanel item={item} />
+    if (item.available) content = <CoinAvailablePanel item={item} />
     return (
       <div className="flex">
-        <h4 className="ma0">{item.pair}</h4>
-        <div className="pl0 pl5-ns">
+        <h4 className="ma0 flex items-center">{item.pair}</h4>
+        <div className="w-100 pl0 pl5-ns">
           {content}
         </div>
       </div>

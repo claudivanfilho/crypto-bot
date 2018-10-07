@@ -41,14 +41,6 @@ authStrategies(app)
 routes(app)
 database(app).connect()
 
-// app.use('*', (req, res) => {
-//   if (!req.user) {
-//     res.redirect('/auth/login')
-//   } else {
-//     res.sendFile(path.join(__dirname, '../build', 'index.html'))
-//   }
-// })
-
 app.use((err, req, res, next) => {
   if (err.message) {
     res.status(500)

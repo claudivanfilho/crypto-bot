@@ -9,6 +9,7 @@ import { CoinsAvailableProvider } from '../contexts/coinsAvailableContext'
 import { OpenOrdersProvider } from '../contexts/openOrdersContext'
 import { MyTradeHistoryProvider } from '../contexts/myTradeHistoryContext'
 import { ChartProvider } from '../contexts/chartContext'
+import { TickerProvider } from '../contexts/tickerContext'
 
 import { withRouter } from 'react-router-dom'
 import { UserConsumer } from '../contexts/userContext'
@@ -35,7 +36,9 @@ class App extends Component {
                 <OrderBookProvider>
                   <TradeHistoryProvider>
                     <ChartProvider>
-                      <Layout />
+                      <TickerProvider>
+                        <Layout />
+                      </TickerProvider>
                     </ChartProvider>
                   </TradeHistoryProvider>
                 </OrderBookProvider>

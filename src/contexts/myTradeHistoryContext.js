@@ -1,13 +1,15 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import API from '../api'
+import { SelectedItemConsumer } from './selectedItemContext'
 import { equals } from 'ramda'
 
 const MyTradeHistoryContext = React.createContext()
 
-export class MyTradeHistoryProvider extends Component {
+class MyTradeHistoryProviderClass extends Component {
   static propTypes = {
     children: PropTypes.any,
+    pair: PropTypes.string,
   }
 
   state = {
@@ -23,11 +25,13 @@ export class MyTradeHistoryProvider extends Component {
   }
 
   fetchMyTradeHistory = () => {
-    API.fetchMyTradeHistory().then(res => {
-      if (!equals(this.state.myTradeHistory, res)) {
-        this.setState({ myTradeHistory: res })
-      }
-    })
+    if (this.props.pair) {
+      API.fetchMyTradeHistory(this.props.pair).then(res => {
+        if (!equals(this.state.myTradeHistory, res)) {
+          this.setState({ myTradeHistory: res })
+        }
+      })
+    }
   }
 
   render() {
@@ -44,5 +48,18 @@ export class MyTradeHistoryProvider extends Component {
     )
   }
 }
+
+export const MyTradeHistoryProvider = (props) => (
+  <SelectedItemConsumer.Consumer>
+    {({ selectedItem }) => (
+      <MyTradeHistoryProviderClass {...props} pair={selectedItem.pair}>
+        {
+          // eslint-disable-next-line
+          props.children
+        }
+      </MyTradeHistoryProviderClass>
+    )}
+  </SelectedItemConsumer.Consumer>
+)
 
 export const MyTradeHistoryConsumer = MyTradeHistoryContext.Consumer

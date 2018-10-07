@@ -11,6 +11,7 @@ class Login extends Component {
     setUser: PropTypes.func,
     loading: PropTypes.bool,
     history: PropTypes.any,
+    fetchUser: PropTypes.func,
   }
 
   state = {
@@ -38,7 +39,7 @@ class Login extends Component {
   handleSendCode = () => {
     if (this.state.code) {
       API.sendCode(this.state.code)
-        .then(() => { this.props.history.push('/') })
+        .then(() => { this.props.fetchUser().then(() => this.props.history.push('/')) })
         .catch(() => alert('Invalid or Expired Code'))
     }
   }
@@ -120,12 +121,14 @@ const LoginWithRouter = withRouter(Login)
 export default function ComponentWithContext(props) {
   return (
     <UserConsumer>
-      {({ user, loading, setUser }) => (
+      {({ user, loading, setUser, fetchUser }) => (
         <LoginWithRouter
           {...props}
           user={user}
           loading={loading}
-          setUser={setUser} />
+          setUser={setUser}
+          fetchUser={fetchUser}
+        />
       )}
     </UserConsumer>
   )

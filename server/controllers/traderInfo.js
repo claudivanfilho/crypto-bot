@@ -1,5 +1,6 @@
 import PoloService from '../services/Polo'
 import Helpers from '../utils/index'
+import moment from 'moment'
 import {
   tradeHistory,
   coinsAvailable,
@@ -7,11 +8,19 @@ import {
 } from '../robot/routines/traderInfo'
 
 export default {
-  tradeHistory: ({ query: { start, end, pair }, user }, res, next) => {
+  tradeHistory: ({ query: {
+    start = moment().subtract(90, 'day').startOf('day').unix(),
+    end = moment().unix(),
+    pair = 'All',
+  }, user }, res, next) => {
     if (tradeHistory) {
-      res.json(tradeHistory)
+      if (pair !== 'All') {
+        res.json(tradeHistory[pair] || [])
+      } else {
+        res.json(tradeHistory)
+      }
     } else {
-      PoloService.fetchTradeHistory(start, end, user, pair)
+      PoloService.fetchTradeHistory(pair, start, end, user)
         .then((result) => (res.json(result)))
         .catch(error => next(error))
     }
