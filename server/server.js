@@ -18,9 +18,17 @@ const port = process.env.PORT || 8080
 
 app.all('/', (req, res) => {
   if (!req.user) {
-    res.redirect('/auth/login')
+    res.redirect('/login')
   } else {
     res.sendFile(path.join(__dirname, '../build', 'index.html'))
+  }
+})
+
+app.get('/login', function(req, res) {
+  if (!req.user) {
+    res.sendFile(path.join(__dirname, '../build', 'index.html'))
+  } else {
+    res.redirect('/')
   }
 })
 
