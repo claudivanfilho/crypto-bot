@@ -9,7 +9,7 @@ import ItemSelected from './ItemSelected'
 import CoinsTabbed from './CoinsTabbed'
 import SideBar from './SideBar'
 
-const SIDEBAR_WIDTH = 40
+const SIDEBAR_WIDTH = 48
 
 export default class Layout extends Component {
   state = {
@@ -35,20 +35,19 @@ export default class Layout extends Component {
   render() {
     return (
       <Fragment>
-        <div className="flex flex-column" style={{
-          width: `${SIDEBAR_WIDTH}px`,
-          height: '100vh',
-          position: 'fixed',
-        }}>
+        <div
+          className="flex flex-row flex-column-ns vh-100-ns h-auto w-auto-ns w-100 top-0 z-2"
+          style={{
+            width: `${SIDEBAR_WIDTH}px`,
+            position: 'fixed',
+          }}
+        >
           <SideBar
             visibilityItems={this.state.visibility}
             handleToogleItem={this.toogleItem}
           />
         </div>
-        <div className="relative" style={{
-          width: `calc(100% - ${SIDEBAR_WIDTH}px)`,
-          left: `${SIDEBAR_WIDTH}px`,
-        }}>
+        <div className="relative ml8-ns mt8 pt6 mt0-ns pt0-ns">
           {
             this.state.visibility.openOrders && (
               <Fragment>

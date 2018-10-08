@@ -32,7 +32,7 @@ class Ticker extends Component {
             this.tabs.map(tab => (
               <div
                 key={tab}
-                className={`item pointer dim
+                className={`item pointer dim f6
                   ${this.state.activeTab === tab ? 'active' : ''}
                 `}
                 onClick={() => this.handleTabChange(tab)}

@@ -27,7 +27,7 @@ class SideBar extends Component {
   render() {
     return (
       <div
-        className="flex flex-column items-center pt4 h-100 white"
+        className="flex flex-row flex-column-ns items-center pt4 h-100 white w-100 justify-around justify-start-ns"
         style={{ backgroundColor: '#23262E' }}
       >
         {
