@@ -3,7 +3,11 @@ import UserRepository from '../repositories/user.js'
 export default {
 
   get: (req, res) => {
-    res.json(UserRepository.dto(req.user))
+    if (req.user) {
+      res.json(UserRepository.dto(req.user))
+    } else {
+      throw new Error('User not authenticated')
+    }
   },
 
   create: async ({ body: data }, res) => {

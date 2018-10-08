@@ -58,10 +58,10 @@ app.use((err, req, res, next) => {
   }
 })
 
-robot.init(
-  process.env.ROBOT_POLONIEX_API_KEY,
-  process.env.ROBOT_POLONIEX_API_SECRET
-)
+// robot.init(
+//   process.env.ROBOT_POLONIEX_API_KEY,
+//   process.env.ROBOT_POLONIEX_API_SECRET
+// )
 
 app.listen(port)
 console.log(`Server started in the port ${port}`)

@@ -2,7 +2,8 @@ import React, { Component, Fragment } from 'react'
 import { RobotsConsumer } from '../contexts/robotsContext'
 import PropTypes from 'prop-types'
 import ItemSelectable from './ItemSelectable'
-import droid from '../images/droid.svg'
+
+import RobotIcon from '../icons/RobotIcon'
 
 class Robots extends Component {
   static propTypes = {
@@ -12,7 +13,7 @@ class Robots extends Component {
     if (!Array.isArray(this.props.robots)) return null
     return (
       <Fragment>
-        <img alt="robot-icon" height="26" src={droid} className="dn flex-ns mr3" />
+        <RobotIcon size={26} className="dn flex-ns mr3" />
         {this.props.robots.map(robot => (
           <ItemSelectable key={robot.pair} item={robot}>
             {(isSelected) => (

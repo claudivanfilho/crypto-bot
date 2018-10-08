@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react'
 import { OpenOrdersConsumer } from '../contexts/openOrdersContext'
 import PropTypes from 'prop-types'
 import ItemSelectable from './ItemSelectable'
-import ordersIcon from '../images/order-icon.png'
+import OrderIcon from '../icons/OrderIcon'
 
 class OpenOrders extends Component {
   static propTypes = {
@@ -27,7 +27,7 @@ class OpenOrders extends Component {
     // }]
     return (
       <Fragment>
-        <img alt="open-icon" height="26" src={ordersIcon} className="dn flex-ns mr3" />
+        <OrderIcon useDefaultColors size={26} className="dn flex-ns mr3" />
         {orders.map(order => (
           <ItemSelectable key={order.pair} item={order}>
             {(_, isSelectedOrder) => (

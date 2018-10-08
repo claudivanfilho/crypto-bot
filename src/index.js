@@ -1,6 +1,6 @@
 import './styles.css'
-import './tachyons.css'
 import './semantic.min.css'
+import './tachyons.css'
 
 import React from 'react'
 import ReactDOM from 'react-dom'

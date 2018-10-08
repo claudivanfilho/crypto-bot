@@ -111,4 +111,13 @@ export default {
       body: JSON.stringify({ email }),
     }).then(res => res.json())
   ),
+  logout: () => (
+    fetch('/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }).then(res => res.json())
+  ),
 }

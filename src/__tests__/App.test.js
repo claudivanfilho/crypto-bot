@@ -22,8 +22,4 @@ describe('Test App component', () => {
   it('Component should be defined', () => {
     expect(mountedComponent).toBeDefined()
   })
-
-  it('Must find a Link component', () => {
-    expect(mountedComponent.find('Link').exists()).toBe(true)
-  })
 })

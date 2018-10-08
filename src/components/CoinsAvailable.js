@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 import ItemSelectable from './ItemSelectable'
-import coinIcon from '../images/coin.svg'
+
+import CoinIcon from '../icons/CoinIcon'
 
 import { withCoinsAvailable } from '../hocs/withCoinsAvailable'
 
@@ -16,7 +17,7 @@ class CoinsAvailable extends Component {
     if (!this.props.coinsAvailable) return null
     return (
       <Fragment>
-        <img alt="coins-icon" height="24" src={coinIcon} className="dn flex-ns ml2 mr3" />
+        <CoinIcon size={24} className="dn flex-ns ml2 mr3" />
         {
           this.props.coinsAvailable.map(coin => (
             <ItemSelectable

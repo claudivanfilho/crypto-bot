@@ -20,8 +20,14 @@ export class UserProvider extends Component {
 
   fetchUser = () => {
     API.fetchUser().then(res => {
-      this.setState({ user: res, loading: false })
-    }).catch(() => this.setState({ loading: false }))
+      if (res.message) {
+        this.setState({ loading: false, user: null })
+      } else {
+        this.setState({ user: res, loading: false })
+      }
+    }).catch(() => {
+      this.setState({ loading: false, user: null })
+    })
   }
 
   setUser = (data) => {

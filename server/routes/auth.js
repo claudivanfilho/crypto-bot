@@ -21,9 +21,9 @@ router.post('/anonymous', passport.authenticate('anonymous'), (req, res) => {
 
 router.post('/logout', function(req, res) {
   req.logout()
-  res.redirect('/')
   req.session.notice = 'You have successfully been logged out!'
   req.session.destroy()
+  res.json({ message: 'Logout Successfully' })
 })
 
 export default router
