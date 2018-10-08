@@ -48,7 +48,7 @@ class SideBar extends Component {
           className="pa2 mv3 pointer">
           <LogoutIcon
             title="Logout"
-            size={34}
+            size={28}
             color="white"
           />
         </div>
