@@ -22,6 +22,8 @@ export const sendVerificationCode = (code, email) => {
       user: process.env.EMAIL_TO_AUTH_NODEMAILER,
       pass: process.env.PASS_TO_AUTH_NODEMAILER,
     },
+    port: 587,
+    secure: false,
   })
 
   const mailOptions = {

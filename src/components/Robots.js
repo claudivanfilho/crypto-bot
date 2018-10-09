@@ -10,11 +10,13 @@ class Robots extends Component {
     robots: PropTypes.array,
   }
   render() {
-    if (!Array.isArray(this.props.robots)) return null
+    const { robots } = this.props
+    // const robots = [{ pair: 'BTC_NXT' }]
+    if (!Array.isArray(robots)) return null
     return (
       <Fragment>
         <RobotIcon size={26} className="dn flex-ns mr3" />
-        {this.props.robots.map(robot => (
+        {robots.map(robot => (
           <ItemSelectable key={robot.pair} item={robot}>
             {(isSelected) => (
               <button className={`mb3 mb0-ns f7 mr3 ui primary button ${isSelected ? '' : 'basic'}`}>

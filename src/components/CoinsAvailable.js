@@ -14,12 +14,17 @@ class CoinsAvailable extends Component {
   getPair = (coinName) => `BTC_${coinName}`
 
   render() {
-    if (!this.props.coinsAvailable) return null
+    // const coinsAvailable = [
+    //   { coinName: 'BTC', btcValue: '0.05', available: '0.05' },
+    //   { coinName: 'NXT', btcValue: '0.05', available: '2000' },
+    // ]
+    const { coinsAvailable } = this.props
+    if (!coinsAvailable) return null
     return (
       <Fragment>
         <CoinIcon size={24} className="dn flex-ns ml2 mr3" />
         {
-          this.props.coinsAvailable.map(coin => (
+          coinsAvailable.map(coin => (
             <ItemSelectable
               key={coin.coinName}
               item={{ ...coin, pair: this.getPair(coin.coinName) }}
