@@ -20,16 +20,18 @@ export class TickerProvider extends Component {
   }
 
   componentDidMount() {
-    this.tickerInterval = setInterval(this.fetchTicker, 1000)
+    this.fetchTicker().then(() => {
+      this.tickerInterval = setInterval(this.fetchTicker, 3000)
+    })
   }
 
-  fetchTicker = () => {
+  fetchTicker = () => (
     API.fetchTicker().then(res => {
       if (!equals(this.state.ticker, res)) {
         this.setState({ ticker: res })
       }
     })
-  }
+  )
 
   render() {
     const { children } = this.props

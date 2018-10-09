@@ -26,12 +26,15 @@ class ChartProviderClass extends Component {
   }
 
   componentDidMount() {
-    this.chartDataInterval = setInterval(this.fetchChart, 1000)
+    const promise = this.fetchChart()
+    promise && promise.then(() => {
+      this.chartDataInterval = setInterval(this.fetchChart, 1000)
+    })
   }
 
   fetchChart = () => {
     if (this.props.pair) {
-      API.fetchChart({
+      return API.fetchChart({
         pair: this.props.pair,
         start: this.state.start,
         end: this.state.end,

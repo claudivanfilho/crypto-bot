@@ -21,12 +21,15 @@ class OrderBookProviderClass extends Component {
   }
 
   componentDidMount() {
-    this.orderBookInterval = setInterval(this.fetchOrderBook, 1000)
+    const promise = this.fetchOrderBook()
+    promise && promise.then(() => {
+      this.orderBookInterval = setInterval(this.fetchOrderBook, 1000)
+    })
   }
 
   fetchOrderBook = () => {
     if (this.props.pair) {
-      API.fetchOrderBook({ deep: 25, pair: this.props.pair }).then(res => {
+      return API.fetchOrderBook({ deep: 25, pair: this.props.pair }).then(res => {
         if (!equals(this.state.orderBook, res)) {
           this.setState({ orderBook: res })
         }

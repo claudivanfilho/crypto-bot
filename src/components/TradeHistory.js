@@ -22,9 +22,9 @@ class CoinsAvailable extends Component {
     return (
       <div>
         <div className="flex justify-between">
-          <span className="w-33 flex justify-start pl5">Date</span>
-          <span className="w-33 flex justify-start pl5">Price</span>
-          <span className="w-33 flex justify-start pl5">Total</span>
+          <span className="w-33 flex justify-start pl4">Date</span>
+          <span className="w-33 flex justify-start">Price</span>
+          <span className="w-33 flex justify-start">Total</span>
         </div>
         <div className="overflow-y-auto overflow-x-hidden" style={{ height: '20rem' }}>
           <table className="ui gray unstackable table ma0">
@@ -34,13 +34,13 @@ class CoinsAvailable extends Component {
                   className={`f6 ${transaction.type === 'sell' ? 'negative' : 'positive'}`}
                   key={transaction.globalTradeID}
                 >
-                  <td>
+                  <td className="w-33">
                     <Moment fromNow>
                       {this.getDate(transaction.date)}
                     </Moment>
                   </td>
-                  <td>{transaction.rate}</td>
-                  <td>{transaction.total}</td>
+                  <td className="w-33">{transaction.rate}</td>
+                  <td className="w-33">{transaction.total}</td>
                 </tr>
               ))}
             </tbody>

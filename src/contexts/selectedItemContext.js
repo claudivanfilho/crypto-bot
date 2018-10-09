@@ -9,7 +9,7 @@ export class SelectedItemProvider extends Component {
   }
 
   state = {
-    selectedItem: {},
+    selectedItem: { pair: 'BTC_ETH' },
   }
 
   setSelectedItem = (item) => (
